@@ -5,654 +5,493 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OSIS SMK Negeri 5 Telkom</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        r:    '#C41E3A',
+        r2:   '#9B1530',
+        r3:   '#E8304A',
+        rpale:'#FDF2F4',
+        rsoft:'#F5D6DB',
+        warm: '#F4F2EE',
+        line: '#E8E4DE',
+        ink:  '#1A1512',
+        sub:  '#5C5550',
+        muted:'#9C948C',
+        gold: '#C8A96A',
+        off:  '#FAFAF8',
+      },
+      fontFamily: {
+        serif: ['Cormorant Garamond', 'serif'],
+        sans:  ['Jost', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
 <style>
-:root {
-  --r: #C41E3A;
-  --r2: #9B1530;
-  --r3: #E8304A;
-  --rpale: #FDF2F4;
-  --rsoft: #F5D6DB;
-  --w: #FFFFFF;
-  --off: #FAFAF8;
-  --warm: #F4F2EE;
-  --line: #E8E4DE;
-  --ink: #1A1512;
-  --sub: #5C5550;
-  --muted: #9C948C;
-  --gold: #C8A96A;
-}
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 16px; }
-body { font-family: 'Jost', sans-serif; background: var(--w); color: var(--ink); overflow-x: hidden; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Jost', sans-serif; overflow-x: hidden; }
+  *, a, button { cursor: none !important; }
 
-/* ── CURSOR ── */
-*, a, button { cursor: none !important; }
-#cur { position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: var(--r); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .25s, height .25s, background .25s; mix-blend-mode: multiply; }
-#cur.big { width: 40px; height: 40px; background: rgba(196,30,58,.15); }
+  /* cursor */
+  #cur { position: fixed; top:0; left:0; width:8px; height:8px; background:#C41E3A; border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .25s,height .25s,background .25s; mix-blend-mode:multiply; }
+  #cur.big { width:40px; height:40px; background:rgba(196,30,58,.15); }
 
-/* ── NAVBAR ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 800;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 3rem; height: 72px;
-  background: rgba(255,255,255,.88);
-  backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid var(--line);
-  transition: all .4s;
-}
-nav.solid { background: rgba(255,255,255,.98); box-shadow: 0 1px 32px rgba(26,21,18,.06); }
-.nav-brand { display: flex; align-items: center; gap: 1rem; text-decoration: none; }
-.brand-mark {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--r); display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant Garamond', serif; font-size: .9rem; font-weight: 700; color: #fff;
-  letter-spacing: .02em; flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(196,30,58,.3);
-}
-.brand-text { font-size: .78rem; font-weight: 500; color: var(--ink); letter-spacing: .04em; line-height: 1.3; }
-.brand-text small { display: block; font-size: .62rem; font-weight: 400; color: var(--muted); letter-spacing: .06em; }
-.nav-links { display: flex; align-items: center; gap: .15rem; list-style: none; }
-.nav-links a {
-  padding: .45rem .9rem; font-size: .72rem; font-weight: 500; letter-spacing: .06em;
-  text-transform: uppercase; color: var(--sub); text-decoration: none;
-  border-radius: 4px; transition: color .2s, background .2s;
-}
-.nav-links a:hover { color: var(--r); background: var(--rpale); }
-.nav-cta-btn {
-  padding: .5rem 1.4rem; background: var(--r); color: #fff;
-  border: none; border-radius: 4px; font-family: 'Jost', sans-serif;
-  font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-  cursor: none; text-decoration: none;
-  box-shadow: 0 4px 20px rgba(196,30,58,.28); transition: all .25s;
-}
-.nav-cta-btn:hover { background: var(--r2); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(196,30,58,.35); }
-@media (max-width: 820px) { .nav-links { display: none; } }
+  /* ticker */
+  @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ticker-track { animation: tickerScroll 22s linear infinite; }
 
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding-top: 72px; overflow: hidden; position: relative;
-  background: var(--w);
-}
+  /* reveal */
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease,transform .7s ease; }
+  .reveal.in { opacity:1; transform:none; }
 
-/* big decorative background text */
-.hero-bg-text {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-6deg);
-  font-family: 'Cormorant Garamond', serif; font-size: 22vw; font-weight: 700;
-  color: rgba(196,30,58,.04); white-space: nowrap; pointer-events: none; user-select: none;
-  line-height: 1; z-index: 0;
-}
+  /* animations */
+  @keyframes fadeSlide { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+  @keyframes growLine  { from{width:0} to{width:48px} }
+  .anim-fs-0 { animation: fadeSlide .8s ease both; }
+  .anim-fs-1 { animation: fadeSlide .8s .1s ease both; }
+  .anim-fs-2 { animation: fadeSlide .8s .25s ease both; }
+  .anim-fs-3 { animation: fadeSlide .8s .3s ease both; }
+  .anim-fs-4 { animation: fadeSlide .8s .4s ease both; }
+  .anim-fs-5 { animation: fadeSlide .8s .5s ease both; }
+  .hero-line  { animation: growLine .8s .25s ease both; }
 
-.hero-content {
-  position: relative; z-index: 1;
-  max-width: 1120px; margin: 0 auto; width: 100%;
-  padding: 5rem 3rem 3rem;
-  display: flex; flex-direction: column; gap: 0;
-}
+  /* profil cell hover bar */
+  .profil-cell::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:#C41E3A; transform:scaleY(0); transform-origin:bottom; transition:transform .35s cubic-bezier(.22,1,.36,1); }
+  .profil-cell:hover::before { transform:scaleY(1); }
+  .profil-cell:hover .pc-num { color:rgba(196,30,58,.15); }
 
-.hero-pill {
-  display: inline-flex; align-items: center; gap: .6rem;
-  padding: .35rem 1rem .35rem .5rem; margin-bottom: 2.5rem;
-  background: var(--rpale); border: 1px solid var(--rsoft);
-  border-radius: 100px; width: fit-content;
-  animation: fadeSlide .8s ease both;
-}
-.pill-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--r); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.pill-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
-.pill-text { font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--r); }
+  /* org node bottom bar */
+  .org-node::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:#C41E3A; transform:scaleX(0); transition:transform .3s cubic-bezier(.22,1,.36,1); }
+  .org-node:hover::after { transform:scaleX(1); }
 
-.hero h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(4.5rem, 9vw, 9rem); font-weight: 300;
-  line-height: .92; letter-spacing: -.03em; color: var(--ink);
-  animation: fadeSlide .8s .1s ease both;
-  max-width: 800px;
-}
-.hero h1 strong { font-weight: 700; }
-.hero h1 em { font-style: italic; color: var(--r); font-weight: 300; }
+  /* gallery hover */
+  .gi:hover .gi-bg   { transform:scale(1.05); }
+  .gi:hover .gi-overlay { opacity:1; }
 
-.hero-line {
-  width: 48px; height: 2px; background: var(--r); margin: 2.5rem 0;
-  animation: growLine .8s .25s ease both;
-}
-@keyframes growLine { from { width: 0; } to { width: 48px; } }
+  /* gallery bg items */
+  .gi-bg-1 { background: linear-gradient(135deg,#fde8ec,#f5c6cf); }
+  .gi-bg-2 { background: linear-gradient(135deg,#f9f0f1,#f2d8dc); }
+  .gi-bg-3 { background: linear-gradient(135deg,#fff0f2,#f9dde1); }
+  .gi-bg-4 { background: linear-gradient(135deg,#f5eded,#ecdcde); }
+  .gi-bg-5 { background: linear-gradient(135deg,#fdf4f5,#f6e3e6); }
 
-.hero-desc {
-  font-size: .92rem; font-weight: 300; color: var(--sub); line-height: 1.85;
-  max-width: 540px; animation: fadeSlide .8s .3s ease both;
-}
-.hero-actions {
-  display: flex; align-items: center; gap: 1.5rem; margin-top: 2.75rem;
-  animation: fadeSlide .8s .4s ease both;
-}
-.btn-primary {
-  padding: .8rem 2rem; background: var(--r); color: #fff;
-  border: none; border-radius: 4px; font-family: 'Jost', sans-serif;
-  font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-  text-decoration: none; box-shadow: 0 6px 24px rgba(196,30,58,.3); transition: all .25s;
-}
-.btn-primary:hover { background: var(--r2); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(196,30,58,.4); }
-.btn-text-link {
-  font-size: .75rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--sub); text-decoration: none; display: flex; align-items: center; gap: .5rem;
-  transition: color .2s;
-}
-.btn-text-link::after { content: '→'; transition: transform .2s; }
-.btn-text-link:hover { color: var(--r); }
-.btn-text-link:hover::after { transform: translateX(4px); }
+  /* gallery layout */
+  .gallery { display:grid; grid-template-columns:repeat(12,1fr); grid-template-rows:220px 180px; gap:12px; margin-top:3rem; }
+  .gi-1 { grid-column:1/6;  grid-row:1/3; }
+  .gi-2 { grid-column:6/9;  grid-row:1; }
+  .gi-3 { grid-column:9/13; grid-row:1; }
+  .gi-4 { grid-column:6/10; grid-row:2; }
+  .gi-5 { grid-column:10/13;grid-row:2; }
 
-/* ── HERO BOTTOM STRIP ── */
-.hero-bottom {
-  position: relative; z-index: 1;
-  border-top: 1px solid var(--line);
-  background: var(--rpale);
-  animation: fadeSlide .8s .5s ease both;
-}
-.hero-bottom-inner {
-  max-width: 1120px; margin: 0 auto;
-  padding: 0 3rem;
-  display: flex; align-items: stretch;
-}
+  /* form max-height transition */
+  .form-section { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.22,1,.36,1); }
+  .form-section.open { max-height:900px; }
 
-/* stats */
-.hero-stats {
-  display: flex; align-items: stretch; flex: 1; gap: 0;
-}
-.hst {
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 2rem 2.5rem 2rem 0;
-  border-right: 1px solid var(--rsoft);
-  min-width: 140px;
-}
-.hst:first-child { padding-left: 0; }
-.hst-n {
-  font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 600;
-  line-height: 1; color: var(--ink);
-}
-.hst-n em { color: var(--r); font-style: normal; }
-.hst-l { font-size: .6rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: .35rem; }
+  /* toast */
+  @keyframes toastIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+  .vote-toast { animation: toastIn .3s ease; }
 
-/* badge */
-.hero-badge {
-  background: var(--r); color: #fff;
-  padding: 1.75rem 2.5rem; text-align: center;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  min-width: 220px; flex-shrink: 0;
-}
-.hb-date { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; line-height: 1.1; }
-.hb-label { font-size: .6rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; opacity: .75; margin-top: .35rem; }
+  /* vote bar */
+  .vote-bar { transition: width .9s cubic-bezier(.22,1,.36,1); }
 
-@media (max-width: 820px) {
-  .hero-content { padding: 3rem 1.5rem 2rem; }
-  .hero-bottom-inner { flex-direction: column; padding: 0 1.5rem; }
-  .hero-stats { flex-wrap: wrap; gap: 0; }
-  .hst { padding: 1.25rem 1.5rem 1.25rem 0; border-right: none; border-bottom: 1px solid var(--rsoft); min-width: 45%; }
-  .hero-badge { padding: 1.5rem; min-width: unset; }
-}
-
-/* ── TICKER ── */
-.ticker {
-  background: var(--r); overflow: hidden;
-  padding: .9rem 0; display: flex; align-items: center;
-}
-.ticker-track {
-  display: flex; gap: 0; white-space: nowrap;
-  animation: tickerScroll 22s linear infinite;
-}
-@keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.ticker-item {
-  display: inline-flex; align-items: center; gap: .75rem;
-  padding: 0 2.5rem; font-size: .68rem; font-weight: 600;
-  letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.85);
-}
-.ticker-sep { color: rgba(255,255,255,.3); font-size: .5rem; }
-
-/* ── GENERIC SECTION ── */
-.sec { padding: 7rem 3rem; }
-.sec-inner { max-width: 1120px; margin: 0 auto; }
-.sec-header { margin-bottom: 4rem; }
-.sec-eyebrow { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
-.eyebrow-line { width: 32px; height: 1px; background: var(--r); }
-.eyebrow-text { font-size: .62rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--r); }
-.sec-h { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 400; line-height: 1.05; letter-spacing: -.02em; color: var(--ink); }
-.sec-h em { font-style: italic; color: var(--r); }
-.sec-sub { margin-top: .75rem; font-size: .88rem; font-weight: 300; color: var(--sub); line-height: 1.8; max-width: 520px; }
-
-/* ── PROFIL CARDS ── */
-.bg-warm { background: var(--warm); }
-.profil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
-.profil-cell {
-  background: var(--w); padding: 2.75rem;
-  transition: background .3s; position: relative; overflow: hidden;
-}
-.profil-cell::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--r); transform: scaleY(0); transform-origin: bottom;
-  transition: transform .35s cubic-bezier(.22,1,.36,1);
-}
-.profil-cell:hover { background: var(--rpale); }
-.profil-cell:hover::before { transform: scaleY(1); }
-.pc-num { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 700; color: rgba(196,30,58,.08); line-height: 1; margin-bottom: 1rem; transition: color .3s; }
-.profil-cell:hover .pc-num { color: rgba(196,30,58,.15); }
-.pc-h { font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); margin-bottom: .6rem; }
-.pc-p { font-size: .84rem; font-weight: 300; color: var(--sub); line-height: 1.8; }
-@media (max-width: 620px) { .profil-grid { grid-template-columns: 1fr; } }
-
-/* ── VISI MISI ── */
-.vm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-.vm-visi { background: var(--ink); border-radius: 16px; padding: 3rem; position: relative; overflow: hidden; }
-.vm-visi::before {
-  content: '"'; position: absolute; top: -1rem; left: 1.5rem;
-  font-family: 'Cormorant Garamond', serif; font-size: 10rem; font-weight: 700;
-  color: rgba(255,255,255,.04); line-height: 1; pointer-events: none;
-}
-.vm-tag { font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--r); margin-bottom: 1.5rem; display: flex; align-items: center; gap: .6rem; }
-.vm-tag::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.1); }
-.vm-quote { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; font-style: italic; color: rgba(255,255,255,.9); line-height: 1.6; }
-.vm-misi { display: flex; flex-direction: column; gap: 1.25rem; }
-.vm-item { display: flex; gap: 1.25rem; align-items: flex-start; padding: 1.25rem; border: 1px solid var(--line); border-radius: 10px; transition: border-color .25s, box-shadow .25s; }
-.vm-item:hover { border-color: var(--rsoft); box-shadow: 0 4px 20px rgba(196,30,58,.08); }
-.vm-n { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: var(--r); flex-shrink: 0; line-height: 1.2; }
-.vm-p { font-size: .82rem; font-weight: 300; color: var(--sub); line-height: 1.75; }
-@media (max-width: 680px) { .vm-grid { grid-template-columns: 1fr; } }
-
-/* ── STRUKTUR ── */
-.org-container { display: flex; flex-direction: column; align-items: center; gap: 0; }
-.org-level { display: flex; gap: 1px; background: var(--line); }
-.org-level.center { justify-content: center; background: transparent; gap: 0; }
-.org-node {
-  min-width: 160px; background: var(--w); padding: 1.5rem 1.25rem;
-  text-align: center; transition: background .25s;
-  border: 1px solid var(--line); border-radius: 12px; margin: .25rem;
-  position: relative; overflow: hidden;
-}
-.org-node::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: var(--r); transform: scaleX(0); transition: transform .3s cubic-bezier(.22,1,.36,1);
-}
-.org-node:hover { background: var(--rpale); }
-.org-node:hover::after { transform: scaleX(1); }
-.org-node.chief { background: var(--r); border-color: var(--r); min-width: 200px; box-shadow: 0 8px 32px rgba(196,30,58,.3); }
-.org-node.chief::after { display: none; }
-.org-node.chief .on-role { color: rgba(255,255,255,.6); }
-.org-node.chief .on-name { color: #fff; }
-.org-connector { width: 1px; height: 24px; background: var(--rsoft); margin: 0 auto; }
-.on-role { font-size: .58rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .3rem; }
-.on-name { font-size: .82rem; font-weight: 600; color: var(--ink); }
-.org-row { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
-
-/* ── GALERI ── */
-.gallery {
-  display: grid; margin-top: 3rem;
-  grid-template-columns: repeat(12, 1fr); grid-template-rows: 220px 180px;
-  gap: 12px;
-}
-.gi { border-radius: 12px; overflow: hidden; position: relative; cursor: none; }
-.gi:nth-child(1) { grid-column: 1/6; grid-row: 1/3; }
-.gi:nth-child(2) { grid-column: 6/9; }
-.gi:nth-child(3) { grid-column: 9/13; }
-.gi:nth-child(4) { grid-column: 6/10; }
-.gi:nth-child(5) { grid-column: 10/13; }
-.gi-bg { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75rem; transition: transform .5s cubic-bezier(.22,1,.36,1); }
-.gi:hover .gi-bg { transform: scale(1.05); }
-.gi:nth-child(1) .gi-bg { background: linear-gradient(135deg, #fde8ec, #f5c6cf); }
-.gi:nth-child(2) .gi-bg { background: linear-gradient(135deg, #f9f0f1, #f2d8dc); }
-.gi:nth-child(3) .gi-bg { background: linear-gradient(135deg, #fff0f2, #f9dde1); }
-.gi:nth-child(4) .gi-bg { background: linear-gradient(135deg, #f5eded, #ecdcde); }
-.gi:nth-child(5) .gi-bg { background: linear-gradient(135deg, #fdf4f5, #f6e3e6); }
-.gi-ico { font-size: 2.5rem; opacity: .5; }
-.gi-lbl { font-size: .68rem; font-weight: 600; letter-spacing: .08em; color: var(--r2); text-transform: uppercase; }
-.gi-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(154,21,48,.82) 0%, rgba(154,21,48,.1) 55%, transparent 100%); opacity: 0; transition: opacity .35s; display: flex; align-items: flex-end; padding: 1.25rem; }
-.gi:hover .gi-overlay { opacity: 1; }
-.gi-cap { font-size: .75rem; font-weight: 500; letter-spacing: .04em; color: #fff; line-height: 1.4; }
-
-/* ── VOTING ── */
-.vote-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
-.vote-deadline { padding: .5rem 1.1rem; background: var(--rpale); border: 1px solid var(--rsoft); border-radius: 4px; font-size: .68rem; font-weight: 600; color: var(--r); letter-spacing: .06em; white-space: nowrap; }
-.cands-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-.cand { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--w); transition: all .3s; position: relative; }
-.cand:hover { border-color: var(--rsoft); box-shadow: 0 8px 40px rgba(196,30,58,.1); transform: translateY(-4px); }
-.cand.voted { border-color: var(--r); box-shadow: 0 8px 40px rgba(196,30,58,.18); }
-.cand-top { background: var(--rpale); padding: 2.5rem 1.5rem 1.5rem; text-align: center; position: relative; }
-.cand.voted .cand-top { background: linear-gradient(135deg, var(--rpale), var(--rsoft)); }
-.cand-num-badge { position: absolute; top: 1rem; left: 1rem; width: 28px; height: 28px; border-radius: 50%; background: var(--r); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 700; letter-spacing: .02em; }
-.voted-check { position: absolute; top: 1rem; right: 1rem; width: 28px; height: 28px; border-radius: 50%; background: var(--r); display: none; align-items: center; justify-content: center; color: #fff; font-size: .8rem; }
-.cand.voted .voted-check { display: flex; }
-.cand-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; background: var(--w); border: 3px solid rgba(196,30,58,.15); display: flex; align-items: center; justify-content: center; font-size: 2rem; transition: border-color .3s; }
-.cand.voted .cand-avatar { border-color: var(--r); }
-.cand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); margin-bottom: .25rem; }
-.cand-tagline { font-size: .75rem; font-weight: 300; color: var(--sub); line-height: 1.6; }
-.cand-body { padding: 1.5rem; }
-.vote-bar-wrap { height: 3px; background: var(--line); border-radius: 100px; margin-bottom: .5rem; overflow: hidden; }
-.vote-bar { height: 100%; background: linear-gradient(90deg, var(--r), var(--r3)); border-radius: 100px; transition: width .9s cubic-bezier(.22,1,.36,1); }
-.vote-meta { display: flex; justify-content: space-between; font-size: .66rem; color: var(--muted); margin-bottom: 1.25rem; }
-.vote-btn { width: 100%; padding: .7rem; border-radius: 8px; border: 1.5px solid var(--rsoft); background: transparent; font-family: 'Jost', sans-serif; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--r); cursor: none; transition: all .25s; }
-.vote-btn:hover { background: var(--r); color: #fff; border-color: var(--r); }
-.cand.voted .vote-btn { background: var(--r); color: #fff; border-color: var(--r); }
-.vote-footer-bar { display: flex; align-items: center; justify-content: space-between; margin-top: 2.5rem; padding: 1.5rem 2rem; background: var(--warm); border-radius: 12px; border: 1px solid var(--line); flex-wrap: wrap; gap: 1rem; }
-.vf-total-label { font-size: .62rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: .25rem; }
-.vf-total-n { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 600; color: var(--r); line-height: 1; }
-.vf-note { font-size: .72rem; font-weight: 300; color: var(--muted); text-align: right; line-height: 1.6; }
-.vote-toast { padding: 1rem 1.5rem; background: #fff; border: 1px solid var(--rsoft); border-radius: 8px; border-left: 3px solid var(--r); font-size: .8rem; color: var(--r); font-weight: 500; margin-top: 1.25rem; display: none; animation: toastIn .3s ease; }
-.vote-toast.show { display: block; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-@media (max-width: 700px) { .cands-grid { grid-template-columns: 1fr; } }
-
-/* ── PENDAFTARAN ── */
-.reg-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
-.reg-card { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: box-shadow .3s; }
-.reg-card:hover { box-shadow: 0 8px 40px rgba(196,30,58,.1); }
-.reg-card-top { padding: 2.5rem 2.5rem 2rem; position: relative; overflow: hidden; }
-.reg-card.ketua .reg-card-top { background: var(--ink); }
-.reg-card.anggota .reg-card-top { background: var(--rpale); border-bottom: 1px solid var(--rsoft); }
-.reg-deco-num { position: absolute; right: 1.5rem; bottom: -1rem; font-family: 'Cormorant Garamond', serif; font-size: 7rem; font-weight: 700; line-height: 1; pointer-events: none; }
-.reg-card.ketua .reg-deco-num { color: rgba(255,255,255,.04); }
-.reg-card.anggota .reg-deco-num { color: rgba(196,30,58,.06); }
-.reg-type { font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--r); margin-bottom: .75rem; }
-.reg-card.ketua .reg-type { color: var(--rsoft); }
-.reg-h { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; margin-bottom: .5rem; }
-.reg-card.ketua .reg-h { color: #fff; }
-.reg-card.anggota .reg-h { color: var(--ink); }
-.reg-sub { font-size: .78rem; font-weight: 300; line-height: 1.7; }
-.reg-card.ketua .reg-sub { color: rgba(255,255,255,.45); }
-.reg-card.anggota .reg-sub { color: var(--sub); }
-.reg-card-body { padding: 2rem 2.5rem; background: var(--w); }
-.req-list { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: .6rem; }
-.req-list li { display: flex; align-items: flex-start; gap: .75rem; font-size: .8rem; font-weight: 300; color: var(--sub); line-height: 1.5; }
-.req-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--r); flex-shrink: 0; margin-top: .45rem; }
-.toggle-btn { width: 100%; padding: .8rem; border-radius: 8px; border: 1.5px solid var(--rsoft); background: transparent; font-family: 'Jost', sans-serif; font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--r); cursor: none; transition: all .25s; }
-.toggle-btn:hover, .toggle-btn.open { background: var(--r); color: #fff; border-color: var(--r); }
-.form-section { max-height: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.22,1,.36,1); }
-.form-section.open { max-height: 900px; }
-.form-inner { padding-top: 1.5rem; }
-.fg { margin-bottom: .9rem; }
-.fg label { display: block; font-size: .62rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
-.fg input, .fg select, .fg textarea { width: 100%; padding: .65rem .9rem; border: 1px solid var(--line); border-radius: 6px; font-family: 'Jost', sans-serif; font-size: .82rem; font-weight: 300; color: var(--ink); background: var(--off); outline: none; transition: border-color .2s; }
-.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--r); background: var(--w); }
-.fg textarea { resize: vertical; min-height: 72px; }
-.fg-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-.form-btn { width: 100%; margin-top: 1rem; padding: .8rem; background: var(--r); color: #fff; border: none; border-radius: 8px; font-family: 'Jost', sans-serif; font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; cursor: none; box-shadow: 0 4px 20px rgba(196,30,58,.25); transition: all .25s; }
-.form-btn:hover { background: var(--r2); transform: translateY(-1px); }
-.form-success { margin-top: 1rem; padding: 1.1rem; background: var(--rpale); border: 1px solid var(--rsoft); border-radius: 8px; text-align: center; font-size: .78rem; color: var(--r); font-weight: 500; display: none; line-height: 1.6; }
-.form-success.show { display: block; }
-@media (max-width: 680px) { .reg-wrap { grid-template-columns: 1fr; } }
-
-/* ── FOOTER ── */
-footer { background: var(--ink); padding: 3rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
-.f-brand { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: #fff; }
-.f-brand span { color: var(--r); }
-.f-copy { font-size: .68rem; font-weight: 300; color: rgba(255,255,255,.3); margin-top: .25rem; }
-.f-links { display: flex; gap: 1.75rem; }
-.f-links a { font-size: .68rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.35); text-decoration: none; transition: color .2s; }
-.f-links a:hover { color: var(--r); }
-
-/* ── ANIMATIONS ── */
-@keyframes fadeSlide { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-.reveal.in { opacity: 1; transform: none; }
+  /* hero bg text */
+  .hero-bg-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-6deg); font-family:'Cormorant Garamond',serif; font-size:22vw; font-weight:700; color:rgba(196,30,58,.04); white-space:nowrap; pointer-events:none; user-select:none; line-height:1; z-index:0; }
 </style>
 </head>
-<body>
+<body class="bg-white text-ink">
 
 <div id="cur"></div>
 
 <!-- NAV -->
-<nav id="nav">
-  <a href="#beranda" class="nav-brand">
-    <div class="brand-mark">O</div>
-    <div class="brand-text">OSIS SMK 5 Telkom <small>Periode 2026 / 2027</small></div>
+<nav id="nav" class="fixed top-0 left-0 right-0 z-[800] flex items-center justify-between px-12 h-[72px] bg-white/88 backdrop-blur-xl border-b border-line transition-all duration-300" style="backdrop-filter:blur(20px) saturate(1.4)">
+  <a href="#beranda" class="flex items-center gap-4 no-underline">
+    <div class="w-9 h-9 rounded-full bg-r flex items-center justify-center font-serif text-[.9rem] font-bold text-white shadow-[0_4px_16px_rgba(196,30,58,.3)] flex-shrink-0">O</div>
+    <div class="text-[.78rem] font-medium text-ink leading-tight tracking-[.04em]">OSIS SMK 5 Telkom <small class="block text-[.62rem] font-normal text-muted tracking-[.06em]">Periode 2026 / 2027</small></div>
   </a>
-  <ul class="nav-links">
-    <li><a href="#profil">Profil</a></li>
-    <li><a href="#visi-misi">Visi Misi</a></li>
-    <li><a href="#struktur">Struktur</a></li>
-    <li><a href="#galeri">Galeri</a></li>
-    <li><a href="#voting">Voting</a></li>
+  <ul class="hidden md:flex items-center gap-0.5 list-none">
+    <li><a href="#profil"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Profil</a></li>
+    <li><a href="#visi-misi" class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Visi Misi</a></li>
+    <li><a href="#struktur"  class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Struktur</a></li>
+    <li><a href="#galeri"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Galeri</a></li>
+    <li><a href="#voting"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Voting</a></li>
   </ul>
-  <a href="#pendaftaran" class="nav-cta-btn">Daftar Sekarang</a>
+  <a href="#pendaftaran" class="px-5 py-2 bg-r text-white no-underline rounded text-[.72rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.28)] hover:bg-r2 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(196,30,58,.35)] transition-all">Daftar Sekarang</a>
 </nav>
 
 <!-- HERO -->
-<section id="beranda" class="hero">
+<section id="beranda" class="min-h-screen flex flex-col justify-center pt-[72px] overflow-hidden relative bg-white">
   <div class="hero-bg-text">OSIS</div>
 
-  <div class="hero-content">
-    <div class="hero-pill">
-      <div class="pill-dot"></div>
-      <span class="pill-text">Periode 2026 — 2027</span>
+  <div class="relative z-10 max-w-[1120px] mx-auto w-full px-12 pt-20 pb-12 flex flex-col gap-0">
+    <!-- pill -->
+    <div class="inline-flex items-center gap-2.5 py-1.5 pl-2 pr-4 mb-10 bg-rpale border border-rsoft rounded-full w-fit anim-fs-0">
+      <div class="w-5 h-5 rounded-full bg-r flex items-center justify-center flex-shrink-0">
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+      </div>
+      <span class="text-[.65rem] font-semibold tracking-[.12em] uppercase text-r">Periode 2026 — 2027</span>
     </div>
-    <h1>Suara<br>Siswa,<br><strong>Aksi <em>Nyata</em></strong></h1>
-    <div class="hero-line"></div>
-    <p class="hero-desc">OSIS SMK Negeri 5 Telkom — ruang tumbuh para pemimpin muda yang berani berpikir, bergerak, dan berkolaborasi untuk sekolah yang lebih baik.</p>
-    <div class="hero-actions">
-      <a href="#voting" class="btn-primary">Vote Ketua OSIS</a>
-      <a href="#profil" class="btn-text-link">Kenali Kami</a>
+
+    <h1 class="font-serif font-light leading-[.92] tracking-[-0.03em] text-ink anim-fs-1 max-w-[800px]" style="font-size:clamp(4.5rem,9vw,9rem)">
+      Suara<br>Siswa,<br><strong class="font-bold">Aksi <em class="italic text-r font-light">Nyata</em></strong>
+    </h1>
+
+    <div class="w-12 h-0.5 bg-r my-10 hero-line"></div>
+
+    <p class="text-[.92rem] font-light text-sub leading-[1.85] max-w-[540px] anim-fs-3">
+      OSIS SMK Negeri 5 Telkom — ruang tumbuh para pemimpin muda yang berani berpikir, bergerak, dan berkolaborasi untuk sekolah yang lebih baik.
+    </p>
+
+    <div class="flex items-center gap-6 mt-11 anim-fs-4">
+      <a href="#voting" class="px-8 py-3 bg-r text-white no-underline rounded text-[.75rem] font-semibold tracking-[.1em] uppercase shadow-[0_6px_24px_rgba(196,30,58,.3)] hover:bg-r2 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(196,30,58,.4)] transition-all">Vote Ketua OSIS</a>
+      <a href="#profil" class="text-[.75rem] font-medium tracking-[.08em] uppercase text-sub no-underline flex items-center gap-2 hover:text-r transition-colors after:content-['→'] after:transition-transform hover:after:translate-x-1">Kenali Kami</a>
     </div>
   </div>
 
-  <!-- BOTTOM STRIP: stats + badge -->
-  <div class="hero-bottom">
-    <div class="hero-bottom-inner">
-      <div class="hero-stats">
-        <div class="hst">
-          <div class="hst-n">50<em>+</em></div>
-          <div class="hst-l">Anggota Aktif</div>
+  <!-- bottom strip -->
+  <div class="relative z-10 border-t border-line bg-rpale anim-fs-5">
+    <div class="max-w-[1120px] mx-auto px-12 flex items-stretch">
+      <div class="flex items-stretch flex-1">
+        <div class="flex flex-col justify-center py-8 pr-10 border-r border-rsoft min-w-[140px]">
+          <div class="font-serif text-[2.6rem] font-semibold leading-none text-ink">50<em class="text-r not-italic">+</em></div>
+          <div class="text-[.6rem] font-medium tracking-[.1em] uppercase text-muted mt-1.5">Anggota Aktif</div>
         </div>
-        <div class="hst" style="padding-left:2.5rem;">
-          <div class="hst-n">10<em>+</em></div>
-          <div class="hst-l">Program Kerja</div>
+        <div class="flex flex-col justify-center py-8 px-10 border-r border-rsoft min-w-[140px]">
+          <div class="font-serif text-[2.6rem] font-semibold leading-none text-ink">10<em class="text-r not-italic">+</em></div>
+          <div class="text-[.6rem] font-medium tracking-[.1em] uppercase text-muted mt-1.5">Program Kerja</div>
         </div>
-        </div>
-      <div class="hero-badge">
-        <div class="hb-date">10-12 Februari 2026</div>
-        <div class="hb-label">Batas Akhir Voting Ketua OSIS</div>
+      </div>
+      <div class="bg-r text-white px-10 py-7 text-center flex flex-col justify-center items-center min-w-[220px] flex-shrink-0">
+        <div class="font-serif text-[1.8rem] font-semibold leading-tight">10-12 Februari 2026</div>
+        <div class="text-[.6rem] font-medium tracking-[.12em] uppercase opacity-75 mt-1.5">Batas Akhir Voting Ketua OSIS</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track" id="tt"></div>
+<div class="bg-r overflow-hidden py-3.5 flex items-center">
+  <div class="ticker-track flex gap-0 whitespace-nowrap" id="tt"></div>
 </div>
 
 <!-- PROFIL -->
-<section id="profil" class="sec bg-warm">
-  <div class="sec-inner">
-    <div class="sec-header reveal">
-      <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">01 — Tentang Kami</span></div>
-      <h2 class="sec-h">Profil <em>OSIS</em></h2>
+<section id="profil" class="py-28 px-12 bg-warm">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="mb-16 reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-8 h-px bg-r"></div>
+        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">01 — Tentang Kami</span>
+      </div>
+      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Profil <em class="italic text-r">OSIS</em></h2>
     </div>
-    <div class="profil-grid reveal">
-      <div class="profil-cell"><div class="pc-num">01</div><div class="pc-h">Siapa Kami</div><p class="pc-p">OSIS SMK Negeri 5 Telkom adalah wadah aspirasi, kreativitas, dan kepemimpinan siswa — menjembatani antara siswa dan sekolah dalam menciptakan lingkungan belajar yang dinamis.</p></div>
-      <div class="profil-cell"><div class="pc-num">02</div><div class="pc-h">Apa yang Kami Lakukan</div><p class="pc-p">Mengelola ekstrakurikuler, mengadakan event sekolah, menyuarakan aspirasi siswa — OSIS adalah pusat pergerakan positif di lingkungan SMK Negeri 5 Telkom.</p></div>
-      <div class="profil-cell"><div class="pc-num">03</div><div class="pc-h">Perjalanan Kami</div><p class="pc-p">Perjalanan OSIS SMK Negeri 5 Telkom dimulai dari semangat kebersamaan untuk menciptakan lingkungan sekolah yang aktif, kreatif, dan inspiratif.</p></div>
-      <div class="profil-cell"><div class="pc-num">04</div><div class="pc-h">Nilai Kami</div><p class="pc-p">Integritas · Kolaborasi · Inovasi · Inklusivitas. Setiap suara siswa berharga dan berhak untuk didengar serta diperjuangkan bersama.</p></div>
+    <div class="grid grid-cols-2 gap-px bg-line reveal">
+      <div class="profil-cell bg-white p-11 hover:bg-rpale transition-colors relative overflow-hidden">
+        <div class="pc-num font-serif text-[3.5rem] font-bold leading-none mb-4 transition-colors" style="color:rgba(196,30,58,.08)">01</div>
+        <div class="text-[.8rem] font-semibold tracking-[.06em] uppercase text-ink mb-2.5">Siapa Kami</div>
+        <p class="text-[.84rem] font-light text-sub leading-[1.8]">OSIS SMK Negeri 5 Telkom adalah wadah aspirasi, kreativitas, dan kepemimpinan siswa — menjembatani antara siswa dan sekolah dalam menciptakan lingkungan belajar yang dinamis.</p>
+      </div>
+      <div class="profil-cell bg-white p-11 hover:bg-rpale transition-colors relative overflow-hidden">
+        <div class="pc-num font-serif text-[3.5rem] font-bold leading-none mb-4 transition-colors" style="color:rgba(196,30,58,.08)">02</div>
+        <div class="text-[.8rem] font-semibold tracking-[.06em] uppercase text-ink mb-2.5">Apa yang Kami Lakukan</div>
+        <p class="text-[.84rem] font-light text-sub leading-[1.8]">Mengelola ekstrakurikuler, mengadakan event sekolah, menyuarakan aspirasi siswa — OSIS adalah pusat pergerakan positif di lingkungan SMK Negeri 5 Telkom.</p>
+      </div>
+      <div class="profil-cell bg-white p-11 hover:bg-rpale transition-colors relative overflow-hidden">
+        <div class="pc-num font-serif text-[3.5rem] font-bold leading-none mb-4 transition-colors" style="color:rgba(196,30,58,.08)">03</div>
+        <div class="text-[.8rem] font-semibold tracking-[.06em] uppercase text-ink mb-2.5">Perjalanan Kami</div>
+        <p class="text-[.84rem] font-light text-sub leading-[1.8]">Perjalanan OSIS SMK Negeri 5 Telkom dimulai dari semangat kebersamaan untuk menciptakan lingkungan sekolah yang aktif, kreatif, dan inspiratif.</p>
+      </div>
+      <div class="profil-cell bg-white p-11 hover:bg-rpale transition-colors relative overflow-hidden">
+        <div class="pc-num font-serif text-[3.5rem] font-bold leading-none mb-4 transition-colors" style="color:rgba(196,30,58,.08)">04</div>
+        <div class="text-[.8rem] font-semibold tracking-[.06em] uppercase text-ink mb-2.5">Nilai Kami</div>
+        <p class="text-[.84rem] font-light text-sub leading-[1.8]">Integritas · Kolaborasi · Inovasi · Inklusivitas. Setiap suara siswa berharga dan berhak untuk didengar serta diperjuangkan bersama.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- VISI MISI -->
-<section id="visi-misi" class="sec">
-  <div class="sec-inner">
-    <div class="sec-header reveal">
-      <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">02 — Arah & Tujuan</span></div>
-      <h2 class="sec-h">Visi &amp; <em>Misi</em></h2>
-    </div>
-    <div class="vm-grid reveal">
-      <div class="vm-visi">
-        <div class="vm-tag">Visi</div>
-        <p class="vm-quote">"Menjadi dewan perwakilan yang menjunjung tinggi nilai-nilai prestasi akademik dan non akademik, serta mendengar aspirasi siswa dengan sebenar benarnya"</p>
+<section id="visi-misi" class="py-28 px-12">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="mb-16 reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-8 h-px bg-r"></div>
+        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">02 — Arah & Tujuan</span>
       </div>
-      <div class="vm-misi">
-        <div class="vm-item"><div class="vm-n">01</div><p class="vm-p">Menciptakan program kerja yang relevan dan bermanfaat bagi seluruh siswa</p></div>
-        <div class="vm-item"><div class="vm-n">02</div><p class="vm-p">Memfasilitasi pengembangan bakat, minat, dan potensi siswa secara optimal</p></div>
-        <div class="vm-item"><div class="vm-n">03</div><p class="vm-p">Membangun budaya kolaborasi dan komunikasi yang sehat antar siswa</p></div>
-        <div class="vm-item"><div class="vm-n">04</div><p class="vm-p">Menjadi jembatan aspirasi antara siswa dan pihak sekolah</p></div>
-        <div class="vm-item"><div class="vm-n">05</div><p class="vm-p">Mendorong jiwa kepemimpinan dan kewirausahaan sosial di kalangan pelajar</p></div>
+      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Visi &amp; <em class="italic text-r">Misi</em></h2>
+    </div>
+    <!-- VISI MISI CARDS — sejajar dan sama tinggi -->
+    <div class="grid grid-cols-2 gap-12 items-stretch reveal">
+      <!-- Visi -->
+      <div class="bg-ink rounded-2xl p-12 relative overflow-hidden flex flex-col">
+        <div class="text-[.6rem] font-semibold tracking-[.2em] uppercase text-r mb-6 flex items-center gap-2.5">
+          Visi
+          <span class="flex-1 h-px bg-white/10"></span>
+        </div>
+        <p class="font-serif text-[1.4rem] font-light italic text-white/90 leading-relaxed">"Menjadi dewan perwakilan yang menjunjung tinggi nilai-nilai prestasi akademik dan non akademik, serta mendengar aspirasi siswa dengan sebenar benarnya"</p>
+      </div>
+      <!-- Misi -->
+      <div class="bg-ink rounded-2xl p-12 relative overflow-hidden flex flex-col">
+        <div class="text-[.6rem] font-semibold tracking-[.2em] uppercase text-r mb-6 flex items-center gap-2.5">
+          Misi
+          <span class="flex-1 h-px bg-white/10"></span>
+        </div>
+        <p class="font-serif text-[1.4rem] font-light italic text-white/90 leading-relaxed">"Mendorong pertumbuhan prestasi siswa di dalam maupun di luar lingkungan sekolah dan menyambut dengan hangat kritikan dari seluruh warga SMK N 5 Telkom Banda Aceh"</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- STRUKTUR -->
-<section id="struktur" class="sec bg-warm">
-  <div class="sec-inner">
-    <div class="sec-header reveal">
-      <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">03 — Tim Kami</span></div>
-      <h2 class="sec-h">Struktur <em>Organisasi</em></h2>
+<section id="struktur" class="py-28 px-12 bg-warm">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="mb-16 reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-8 h-px bg-r"></div>
+        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">03 — Tim Kami</span>
+      </div>
+      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Struktur <em class="italic text-r">Organisasi</em></h2>
     </div>
-    <div class="org-container reveal">
-      <div class="org-level center">
-        <div class="org-node chief">
-          <div class="on-role">Ketua OSIS</div>
-          <div class="on-name">M.Akbar Maulana Mufa</div>
+    <div class="flex flex-col items-center gap-0 reveal">
+      <!-- Ketua -->
+      <div class="flex justify-center">
+        <div class="min-w-[200px] bg-r border border-r rounded-xl p-6 text-center shadow-[0_8px_32px_rgba(196,30,58,.3)]">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-white/60 mb-1.5">Ketua OSIS</div>
+          <div class="text-[.82rem] font-semibold text-white">M.Akbar Maulana Mufa</div>
         </div>
       </div>
-      <div class="org-connector"></div>
-      <div class="org-row">
-        <div class="org-node"><div class="on-role">Wakil Ketua I</div><div class="on-name">Muhammad Fairuz</div></div>
-        <div class="org-node"><div class="on-role">Sekretaris I</div><div class="on-name">Qurrata'aini</div></div>
-        <div class="org-node"><div class="on-role">Sekretaris II</div><div class="on-name">Putri Raisha</div></div>
-        <div class="org-node"><div class="on-role">Bendahara I</div><div class="on-name">Hizri Uswa</div></div>
+      <div class="w-px h-6 bg-rsoft"></div>
+      <!-- Row 1 -->
+      <div class="flex flex-wrap gap-2 justify-center">
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Wakil Ketua I</div>
+          <div class="text-[.82rem] font-semibold text-ink">Muhammad Fairuz</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Sekretaris I</div>
+          <div class="text-[.82rem] font-semibold text-ink">Qurrata'aini</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Sekretaris II</div>
+          <div class="text-[.82rem] font-semibold text-ink">Putri Raisha</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Bendahara I</div>
+          <div class="text-[.82rem] font-semibold text-ink">Hizri Uswa</div>
+        </div>
       </div>
-     <div class="org-connector"></div>
-      <div class="org-row">
-        <div class="org-node"><div class="on-role">Kabid Sosial</div><div class="on-name">Muthia Syabrina</div></div>
-        <div class="org-node"><div class="on-role">Kabid Kesenian</div><div class="on-name">Calista Delinda</div></div>
-         <div class="org-node"><div class="on-role">Kabid Humas</div><div class="on-name">Sulthan Alqan Najed</div></div>
-        <div class="org-node"><div class="on-role">Kabid Keamanan</div><div class="on-name">Muhammad Furqan</div></div>
+      <div class="w-px h-6 bg-rsoft"></div>
+      <!-- Row 2 -->
+      <div class="flex flex-wrap gap-2 justify-center">
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Sosial</div>
+          <div class="text-[.82rem] font-semibold text-ink">Muthia Syabrina</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Kesenian</div>
+          <div class="text-[.82rem] font-semibold text-ink">Calista Delinda</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Humas</div>
+          <div class="text-[.82rem] font-semibold text-ink">Sulthan Alqan Najed</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Keamanan</div>
+          <div class="text-[.82rem] font-semibold text-ink">Muhammad Furqan</div>
+        </div>
       </div>
-      <div class="org-connector"></div>
-      <div class="org-row">
-        <div class="org-node"><div class="on-role">Kabid Agama</div><div class="on-name">M.Zakiyul Mubarak</div></div>
-        <div class="org-node"><div class="on-role">Kabid Olahraga</div><div class="on-name">Syamwil Mubarak</div></div>
-        <div class="org-node"><div class="on-role">Kabid Kesehatan</div><div class="on-name">Hafiz Al-Khalifi</div></div>
+      <div class="w-px h-6 bg-rsoft"></div>
+      <!-- Row 3 -->
+      <div class="flex flex-wrap gap-2 justify-center">
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Agama</div>
+          <div class="text-[.82rem] font-semibold text-ink">M.Zakiyul Mubarak</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Olahraga</div>
+          <div class="text-[.82rem] font-semibold text-ink">Syamwil Mubarak</div>
+        </div>
+        <div class="org-node min-w-[160px] bg-white p-6 text-center border border-line rounded-xl hover:bg-rpale transition-colors relative overflow-hidden">
+          <div class="text-[.58rem] font-semibold tracking-[.12em] uppercase text-muted mb-1.5">Kabid Kesehatan</div>
+          <div class="text-[.82rem] font-semibold text-ink">Hafiz Al-Khalifi</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- GALERI -->
-<section id="galeri" class="sec">
-  <div class="sec-inner">
-    <div class="sec-header reveal">
-      <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">04 — Momen Kami</span></div>
-      <h2 class="sec-h">Galeri <em>Kegiatan</em></h2>
+<section id="galeri" class="py-28 px-12">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="mb-0 reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-8 h-px bg-r"></div>
+        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">04 — Momen Kami</span>
+      </div>
+      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Galeri <em class="italic text-r">Kegiatan</em></h2>
     </div>
     <div class="gallery reveal">
-      <div class="gi"><div class="gi-bg"><div class="gi-ico">🎉</div><div class="gi-lbl">Pentas Seni 2024</div></div><div class="gi-overlay"><div class="gi-cap">Pentas Seni Tahunan — Festival Kebudayaan Terbesar</div></div></div>
-      <div class="gi"><div class="gi-bg"><div class="gi-ico">🏕️</div><div class="gi-lbl">Leadership Camp</div></div><div class="gi-overlay"><div class="gi-cap">Leadership Camp 2024</div></div></div>
-      <div class="gi"><div class="gi-bg"><div class="gi-ico">⚽</div><div class="gi-lbl">OSIS Cup 2024</div></div><div class="gi-overlay"><div class="gi-cap">Turnamen Olahraga Antar Kelas</div></div></div>
-      <div class="gi"><div class="gi-bg"><div class="gi-ico">🎓</div><div class="gi-lbl">Pelantikan Pengurus</div></div><div class="gi-overlay"><div class="gi-cap">Pelantikan Pengurus OSIS 2024</div></div></div>
-      <div class="gi"><div class="gi-bg"><div class="gi-ico">🌱</div><div class="gi-lbl">Go Green Action</div></div><div class="gi-overlay"><div class="gi-cap">Aksi Peduli Lingkungan Hijau</div></div></div>
+      <div class="gi gi-1 rounded-xl overflow-hidden relative">
+        <div class="gi-bg gi-bg-1 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500" style="transition:transform .5s cubic-bezier(.22,1,.36,1)">
+          <div class="text-[2.5rem] opacity-50">🎉</div>
+          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Pentas Seni 2024</div>
+        </div>
+        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
+          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Pentas Seni Tahunan — Festival Kebudayaan Terbesar</div>
+        </div>
+      </div>
+      <div class="gi gi-2 rounded-xl overflow-hidden relative">
+        <div class="gi-bg gi-bg-2 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
+          <div class="text-[2.5rem] opacity-50">🏕️</div>
+          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Leadership Camp</div>
+        </div>
+        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
+          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Leadership Camp 2024</div>
+        </div>
+      </div>
+      <div class="gi gi-3 rounded-xl overflow-hidden relative">
+        <div class="gi-bg gi-bg-3 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
+          <div class="text-[2.5rem] opacity-50">⚽</div>
+          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">OSIS Cup 2024</div>
+        </div>
+        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
+          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Turnamen Olahraga Antar Kelas</div>
+        </div>
+      </div>
+      <div class="gi gi-4 rounded-xl overflow-hidden relative">
+        <div class="gi-bg gi-bg-4 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
+          <div class="text-[2.5rem] opacity-50">🎓</div>
+          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Pelantikan Pengurus</div>
+        </div>
+        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
+          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Pelantikan Pengurus OSIS 2024</div>
+        </div>
+      </div>
+      <div class="gi gi-5 rounded-xl overflow-hidden relative">
+        <div class="gi-bg gi-bg-5 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
+          <div class="text-[2.5rem] opacity-50">🌱</div>
+          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Go Green Action</div>
+        </div>
+        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
+          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Aksi Peduli Lingkungan Hijau</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- VOTING -->
-<section id="voting" class="sec bg-warm">
-  <div class="sec-inner">
-    <div class="vote-header reveal">
+<section id="voting" class="py-28 px-12 bg-warm">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="flex items-end justify-between gap-8 flex-wrap mb-10 reveal">
       <div>
-        <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">05 — Pilih Pemimpinmu</span></div>
-        <h2 class="sec-h">Vote <em>Ketua & Wakil OSIS</em></h2>
-        <p class="sec-sub">Satu siswa, satu suara. Berikan pilihan terbaikmu untuk Ketua & Wakil OSIS periode 2026/2027.</p>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-px bg-r"></div>
+          <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">05 — Pilih Pemimpinmu</span>
+        </div>
+        <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Vote <em class="italic text-r">Ketua &amp; Wakil OSIS</em></h2>
+        <p class="mt-3 text-[.88rem] font-light text-sub leading-[1.8] max-w-[520px]">Satu siswa, satu suara. Berikan pilihan terbaikmu untuk Ketua & Wakil OSIS periode 2026/2027.</p>
       </div>
-      <div class="vote-deadline">⏱ Voting Ditutup</div>
+      <div class="py-2 px-4 bg-rpale border border-rsoft rounded text-[.68rem] font-semibold text-r tracking-[.06em] whitespace-nowrap">⏱ Voting Ditutup</div>
     </div>
-    <div id="toast" class="vote-toast"></div>
-    <div class="cands-grid reveal" id="cGrid"></div>
-    <div class="vote-footer-bar reveal">
+
+    <div id="toast" class="hidden vote-toast py-4 px-6 bg-white border border-rsoft rounded-lg border-l-[3px] border-l-r text-[.8rem] text-r font-medium mb-5"></div>
+    <div class="grid grid-cols-3 gap-5 reveal" id="cGrid"></div>
+
+    <div class="flex items-center justify-between mt-10 px-8 py-6 bg-warm rounded-xl border border-line flex-wrap gap-4 reveal">
       <div>
-        <div class="vf-total-label">Total Suara Masuk</div>
-        <div class="vf-total-n" id="vTotal">—</div>
+        <div class="text-[.62rem] font-semibold tracking-[.16em] uppercase text-muted mb-1">Total Suara Masuk</div>
+        <div class="font-serif text-[2.5rem] font-semibold text-r leading-none" id="vTotal">—</div>
       </div>
-      <div class="vf-note">Data diperbarui secara real-time<br>setiap suara masuk</div>
+      <div class="text-[.72rem] font-light text-muted text-right leading-relaxed">Data diperbarui secara real-time<br>setiap suara masuk</div>
     </div>
   </div>
 </section>
 
 <!-- PENDAFTARAN -->
-<section id="pendaftaran" class="sec">
-  <div class="sec-inner">
-    <div class="sec-header reveal">
-      <div class="sec-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">06 — Bergabung</span></div>
-      <h2 class="sec-h">Pendaftaran <em>Anggota</em></h2>
-      <p class="sec-sub">Jadilah bagian dari organisasi yang bergerak, berkontribusi, dan berdampak nyata bagi seluruh warga sekolah.</p>
+<section id="pendaftaran" class="py-28 px-12">
+  <div class="max-w-[1120px] mx-auto">
+    <div class="mb-0 reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-8 h-px bg-r"></div>
+        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">06 — Bergabung</span>
+      </div>
+      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Pendaftaran <em class="italic text-r">Anggota</em></h2>
+      <p class="mt-3 text-[.88rem] font-light text-sub leading-[1.8] max-w-[520px]">Jadilah bagian dari organisasi yang bergerak, berkontribusi, dan berdampak nyata bagi seluruh warga sekolah.</p>
     </div>
-    <div class="reg-wrap">
+
+    <div class="grid grid-cols-2 gap-6 mt-12">
 
       <!-- KETUA -->
-      <div class="reg-card ketua reveal">
-        <div class="reg-card-top">
-          <div class="reg-deco-num">K</div>
-          <div class="reg-type">Jalur Ketua</div>
-          <div class="reg-h">Ketua OSIS</div>
-          <p class="reg-sub">Jadilah pemimpin yang menginspirasi dan menggerakkan perubahan positif di sekolah.</p>
+      <div class="reg-card border border-line rounded-2xl overflow-hidden hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] transition-shadow reveal">
+        <div class="bg-ink p-10 relative overflow-hidden">
+          <div class="absolute right-6 -bottom-4 font-serif text-[7rem] font-bold leading-none pointer-events-none text-white/[0.04]">K</div>
+          <div class="text-[.6rem] font-semibold tracking-[.2em] uppercase text-rsoft mb-3">Jalur Ketua/Wakil</div>
+          <div class="font-serif text-[2rem] font-semibold text-white mb-2">Ketua/Wakil OSIS</div>
+          <p class="text-[.78rem] font-light text-white/45 leading-[1.7]">Jadilah pemimpin yang menginspirasi dan menggerakkan perubahan positif di sekolah.</p>
         </div>
-        <div class="reg-card-body">
-          <ul class="req-list">
-            <li><div class="req-dot"></div>Siswa aktif kelas XI</li>
-            <li><div class="req-dot"></div>Nilai rata-rata minimal 80.00</li>
-            <li><div class="req-dot"></div>Tidak sedang menjalani sanksi akademik</li>
-            <li><div class="req-dot"></div>Memiliki jiwa kepemimpinan & visi jelas</li>
-            <li><div class="req-dot"></div>Dukungan minimal 2 guru pembimbing</li>
+        <div class="p-10 bg-white">
+          <ul class="list-none mb-8 flex flex-col gap-2.5">
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Siswa aktif kelas X --- XI</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Tidak sedang menjalani sanksi akademik</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Memiliki jiwa kepemimpinan & visi jelas</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Dukungan minimal 2 guru pembimbing</li>
           </ul>
-          <button class="toggle-btn" id="btnK" onclick="toggleForm('K')">Buka Formulir Pendaftaran</button>
+          <button class="toggle-btn w-full py-3 rounded-lg border-[1.5px] border-rsoft bg-transparent font-sans text-[.72rem] font-semibold tracking-[.1em] uppercase text-r hover:bg-r hover:text-white hover:border-r transition-all" id="btnK" onclick="toggleForm('K')">Buka Formulir Pendaftaran</button>
           <div class="form-section" id="formK">
-            <div class="form-inner">
-              <div class="fg-2">
-                <div class="fg"><label>Nama Lengkap</label><input type="text" placeholder="Nama kamu"/></div>
-                <div class="fg"><label>NIS</label><input type="text" placeholder="Nomor Induk"/></div>
+            <div class="pt-6">
+              <div class="grid grid-cols-2 gap-3 mb-3.5">
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Nama Lengkap</label><input type="text" placeholder="Nama kamu" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">NIS</label><input type="text" placeholder="Nomor Induk" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
               </div>
-              <div class="fg-2">
-                <div class="fg"><label>Kelas</label><select><option value="">Pilih kelas</option><option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI RPL 1</option><option>XI RPL 2</option></select></div>
-                <div class="fg"><label>No. HP</label><input type="tel" placeholder="+62"/></div>
+              <div class="grid grid-cols-2 gap-3 mb-3.5">
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Kelas</label><select class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"><option value="">Pilih kelas</option><option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI RPL 1</option><option>XI RPL 2</option></select></div>
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">No. HP</label><input type="tel" placeholder="+62" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
               </div>
-              <div class="fg"><label>Email</label><input type="email" placeholder="email@sekolah.sch.id"/></div>
-              <div class="fg"><label>Nilai Rata-rata</label><input type="number" min="0" max="100" placeholder="Contoh: 85"/></div>
-              <div class="fg"><label>Visi & Misi Singkat</label><textarea placeholder="Tuliskan visi misi kamu sebagai calon Ketua OSIS..."></textarea></div>
-              <button class="form-btn" onclick="submitReg('K')">Kirim Pendaftaran</button>
-              <div class="form-success" id="doneK">✅ Pendaftaran Ketua OSIS berhasil dikirim. Tim kami akan menghubungimu dalam 2–3 hari kerja.</div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Email</label><input type="email" placeholder="email@sekolah.sch.id" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Nilai Rata-rata</label><input type="number" min="0" max="100" placeholder="Contoh: 85" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Visi & Misi Singkat</label><textarea placeholder="Tuliskan visi misi kamu sebagai calon Ketua OSIS..." class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors resize-y min-h-[72px]"></textarea></div>
+              <button class="form-btn w-full mt-4 py-3 bg-r text-white border-none rounded-lg font-sans text-[.75rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all" onclick="submitReg('K')">Kirim Pendaftaran</button>
+              <div class="form-success hidden mt-4 p-4 bg-rpale border border-rsoft rounded-lg text-center text-[.78rem] text-r font-medium leading-relaxed" id="doneK">✅ Pendaftaran Ketua OSIS berhasil dikirim. Tim kami akan menghubungimu dalam 2–3 hari kerja.</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- ANGGOTA -->
-      <div class="reg-card anggota reveal">
-        <div class="reg-card-top">
-          <div class="reg-deco-num">A</div>
-          <div class="reg-type">Jalur Anggota</div>
-          <div class="reg-h">Anggota OSIS</div>
-          <p class="reg-sub">Berkontribusi aktif, kembangkan potensimu, dan jadilah bagian dari tim yang berdampak.</p>
+      <div class="reg-card border border-line rounded-2xl overflow-hidden hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] transition-shadow reveal">
+        <div class="bg-rpale border-b border-rsoft p-10 relative overflow-hidden">
+          <div class="absolute right-6 -bottom-4 font-serif text-[7rem] font-bold leading-none pointer-events-none" style="color:rgba(196,30,58,.06)">A</div>
+          <div class="text-[.6rem] font-semibold tracking-[.2em] uppercase text-r mb-3">Jalur Anggota</div>
+          <div class="font-serif text-[2rem] font-semibold text-ink mb-2">Anggota OSIS</div>
+          <p class="text-[.78rem] font-light text-sub leading-[1.7]">Berkontribusi aktif, kembangkan potensimu, dan jadilah bagian dari tim yang berdampak.</p>
         </div>
-        <div class="reg-card-body">
-          <ul class="req-list">
-            <li><div class="req-dot"></div>Siswa aktif kelas X – XI</li>
-            <li><div class="req-dot"></div>Nilai rata-rata minimal 75.00</li>
-            <li><div class="req-dot"></div>Berkomitmen mengikuti program kerja</li>
-            <li><div class="req-dot"></div>Minat di salah satu bidang seksi</li>
-            <li><div class="req-dot"></div>Surat rekomendasi wali kelas</li>
+        <div class="p-10 bg-white">
+          <ul class="list-none mb-8 flex flex-col gap-2.5">
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Siswa aktif kelas X – XI</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Berkomitmen mengikuti program kerja</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Minat di salah satu bidang</li>
+            <li class="flex items-start gap-3 text-[.8rem] font-light text-sub leading-snug"><div class="w-1.5 h-1.5 rounded-full bg-r flex-shrink-0 mt-1.5"></div>Surat rekomendasi wali kelas</li>
           </ul>
-          <button class="toggle-btn" id="btnA" onclick="toggleForm('A')">Buka Formulir Pendaftaran</button>
+          <button class="toggle-btn w-full py-3 rounded-lg border-[1.5px] border-rsoft bg-transparent font-sans text-[.72rem] font-semibold tracking-[.1em] uppercase text-r hover:bg-r hover:text-white hover:border-r transition-all" id="btnA" onclick="toggleForm('A')">Buka Formulir Pendaftaran</button>
           <div class="form-section" id="formA">
-            <div class="form-inner">
-              <div class="fg-2">
-                <div class="fg"><label>Nama Lengkap</label><input type="text" placeholder="Nama kamu"/></div>
-                <div class="fg"><label>NIS</label><input type="text" placeholder="Nomor Induk"/></div>
+            <div class="pt-6">
+              <div class="grid grid-cols-2 gap-3 mb-3.5">
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Nama Lengkap</label><input type="text" placeholder="Nama kamu" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">NIS</label><input type="text" placeholder="Nomor Induk" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
               </div>
-              <div class="fg-2">
-                <div class="fg"><label>Kelas</label><select><option value="">Pilih kelas</option><option>X TKJ 1</option><option>X TKJ 2</option><option>X RPL 1</option><option>X RPL 2</option><option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI RPL 1</option><option>XI RPL 2</option></select></div>
-                <div class="fg"><label>No. HP</label><input type="tel" placeholder="+62"/></div>
+              <div class="grid grid-cols-2 gap-3 mb-3.5">
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Kelas</label><select class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"><option value="">Pilih kelas</option><option>X TKJ 1</option><option>X TKJ 2</option><option>X RPL 1</option><option>X RPL 2</option><option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI RPL 1</option><option>XI RPL 2</option></select></div>
+                <div><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">No. HP</label><input type="tel" placeholder="+62" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
               </div>
-              <div class="fg"><label>Email</label><input type="email" placeholder="email@sekolah.sch.id"/></div>
-              <div class="fg"><label>Bidang Minat</label><select><option value="">Pilih bidang</option><option>Akademik</option><option>Kreativitas & Seni</option><option>Olahraga</option><option>Seni & Budaya</option><option>Lingkungan</option></select></div>
-              <div class="fg"><label>Motivasi Bergabung</label><textarea placeholder="Ceritakan motivasimu bergabung dengan OSIS..."></textarea></div>
-              <button class="form-btn" onclick="submitReg('A')">Kirim Pendaftaran</button>
-              <div class="form-success" id="doneA">✅ Pendaftaran Anggota OSIS berhasil dikirim. Tim kami akan menghubungimu dalam 2–3 hari kerja.</div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Email</label><input type="email" placeholder="email@sekolah.sch.id" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"/></div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Bidang Minat</label><select class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors"><option value="">Pilih bidang</option><option>Akademik</option><option>Kreativitas & Seni</option><option>Olahraga</option><option>Seni & Budaya</option><option>Lingkungan</option></select></div>
+              <div class="mb-3.5"><label class="block text-[.62rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Motivasi Bergabung</label><textarea placeholder="Ceritakan motivasimu bergabung dengan OSIS..." class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.82rem] font-light text-ink bg-off outline-none focus:border-r focus:bg-white transition-colors resize-y min-h-[72px]"></textarea></div>
+              <button class="form-btn w-full mt-4 py-3 bg-r text-white border-none rounded-lg font-sans text-[.75rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all" onclick="submitReg('A')">Kirim Pendaftaran</button>
+              <div class="form-success hidden mt-4 p-4 bg-rpale border border-rsoft rounded-lg text-center text-[.78rem] text-r font-medium leading-relaxed" id="doneA">✅ Pendaftaran Anggota OSIS berhasil dikirim. Tim kami akan menghubungimu dalam 2–3 hari kerja.</div>
             </div>
           </div>
         </div>
@@ -663,43 +502,48 @@ footer { background: var(--ink); padding: 3rem; display: flex; align-items: cent
 </section>
 
 <!-- FOOTER -->
-<footer>
+<footer class="bg-ink px-12 py-12 flex items-center justify-between flex-wrap gap-6">
   <div>
-    <div class="f-brand">OSIS <span>SMK Negeri 5 Telkom</span></div>
-    <div class="f-copy">© 2026 · Dibuat dengan penuh semangat oleh Tim OSIS</div>
+    <div class="font-serif text-[1.3rem] font-normal text-white">OSIS <span class="text-r">SMK Negeri 5 Telkom</span></div>
+    <div class="text-[.68rem] font-light text-white/30 mt-1">© 2026 · Dibuat dengan penuh semangat oleh Tim OSIS</div>
   </div>
-  <div class="f-links">
-    <a href="#">Instagram</a>
-    <a href="#">TikTok</a>
-    <a href="#">Email</a>
-    <a href="#">Kontak</a>
+  <div class="flex gap-7">
+    <a href="#" class="text-[.68rem] font-medium tracking-[.08em] uppercase text-white/35 no-underline hover:text-r transition-colors">Instagram</a>
+    <a href="#" class="text-[.68rem] font-medium tracking-[.08em] uppercase text-white/35 no-underline hover:text-r transition-colors">TikTok</a>
+    <a href="#" class="text-[.68rem] font-medium tracking-[.08em] uppercase text-white/35 no-underline hover:text-r transition-colors">Email</a>
+    <a href="#" class="text-[.68rem] font-medium tracking-[.08em] uppercase text-white/35 no-underline hover:text-r transition-colors">Kontak</a>
   </div>
 </footer>
 
 <script>
+// cursor
 const cur = document.getElementById('cur');
-document.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px';
-  cur.style.top = e.clientY + 'px';
-});
-document.querySelectorAll('a,button,.org-node,.profil-cell,.vm-item,.cand,.gi,.reg-card').forEach(el => {
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
+document.querySelectorAll('a,button,.org-node,.profil-cell,.gi,.reg-card').forEach(el => {
   el.addEventListener('mouseenter', () => cur.classList.add('big'));
   el.addEventListener('mouseleave', () => cur.classList.remove('big'));
 });
 
+// nav
 const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40));
+window.addEventListener('scroll', () => {
+  if (scrollY > 40) { nav.style.background='rgba(255,255,255,.98)'; nav.style.boxShadow='0 1px 32px rgba(26,21,18,.06)'; }
+  else { nav.style.background='rgba(255,255,255,.88)'; nav.style.boxShadow=''; }
+});
 
-const items = ['12 Program Kerja Aktif','50 Anggota Terlatih','3× OSIS Terbaik Provinsi','Voting Ketua OSIS 2026','Daftar Sekarang','Inovatif · Inklusif · Berdampak'];
+// ticker
+const items = ['10+ Program Kerja Aktif','50+ Anggota Terlatih','Voting Ketua OSIS 2026','Daftar Sekarang','Inovatif · Inklusif · Berdampak'];
 const tt = document.getElementById('tt');
-const build = items.map(t => `<span class="ticker-item">${t}<span class="ticker-sep">✦</span></span>`).join('');
+const build = items.map(t=>`<span class="inline-flex items-center gap-3 px-10 text-[.68rem] font-semibold tracking-[.12em] uppercase text-white/85">${t}<span class="text-white/30 text-[.5rem]">✦</span></span>`).join('');
 tt.innerHTML = build + build;
 
+// reveal
 const ro = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
+// voting
 const cands = [
   { id:1, name:'Rizky Ardiansyah', num:'01', tagline:'Inovatif, inklusif, dan berdampak untuk seluruh warga SMK 5 Telkom.', emo:'😊', votes:0 },
   { id:2, name:'Nayla Putri',       num:'02', tagline:'Bersama kita lebih kuat — OSIS yang terbuka dan kolaboratif.', emo:'🌟', votes:0 },
@@ -709,23 +553,24 @@ let voted = null;
 function renderVote() {
   const g = document.getElementById('cGrid');
   g.innerHTML = '';
-  const tot = cands.reduce((a,c) => a + c.votes, 0);
+  const tot = cands.reduce((a,c) => a+c.votes, 0);
   cands.forEach(c => {
-    const pct = tot > 0 ? Math.round(c.votes / tot * 100) : 0;
+    const pct = tot > 0 ? Math.round(c.votes/tot*100) : 0;
+    const isVoted = voted === c.id;
     const d = document.createElement('div');
-    d.className = 'cand' + (voted === c.id ? ' voted' : '');
+    d.className = `border rounded-2xl overflow-hidden bg-white transition-all duration-300 relative ${isVoted ? 'border-r shadow-[0_8px_40px_rgba(196,30,58,.18)]' : 'border-line hover:border-rsoft hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] hover:-translate-y-1'}`;
     d.innerHTML = `
-      <div class="cand-top">
-        <div class="cand-num-badge">${c.num}</div>
-        <div class="voted-check">✓</div>
-        <div class="cand-avatar">${c.emo}</div>
-        <div class="cand-name">${c.name}</div>
-        <p class="cand-tagline">${c.tagline}</p>
+      <div class="${isVoted ? 'bg-gradient-to-br from-rpale to-rsoft' : 'bg-rpale'} px-6 pt-10 pb-6 text-center relative">
+        <div class="absolute top-4 left-4 w-7 h-7 rounded-full bg-r text-white flex items-center justify-center text-[.62rem] font-bold">${c.num}</div>
+        ${isVoted ? `<div class="absolute top-4 right-4 w-7 h-7 rounded-full bg-r text-white flex items-center justify-center text-[.8rem]">✓</div>` : ''}
+        <div class="${isVoted ? 'border-r' : 'border-[rgba(196,30,58,.15)]'} w-20 h-20 rounded-full mx-auto mb-4 bg-white border-[3px] flex items-center justify-center text-[2rem] transition-colors">${c.emo}</div>
+        <div class="font-serif text-[1.3rem] font-semibold text-ink mb-1">${c.name}</div>
+        <p class="text-[.75rem] font-light text-sub leading-relaxed">${c.tagline}</p>
       </div>
-      <div class="cand-body">
-        <div class="vote-bar-wrap"><div class="vote-bar" style="width:${pct}%"></div></div>
-        <div class="vote-meta"><span>${c.votes} suara</span><span>${pct}%</span></div>
-        <button class="vote-btn" onclick="doVote(${c.id})">${voted===c.id ? '✓ Sudah Dipilih' : 'Pilih Kandidat Ini'}</button>
+      <div class="p-6">
+        <div class="h-[3px] bg-line rounded-full mb-2 overflow-hidden"><div class="vote-bar h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#C41E3A,#E8304A)"></div></div>
+        <div class="flex justify-between text-[.66rem] text-muted mb-5"><span>${c.votes} suara</span><span>${pct}%</span></div>
+        <button onclick="doVote(${c.id})" class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase transition-all ${isVoted ? 'bg-r text-white border-r' : 'border-rsoft text-r hover:bg-r hover:text-white hover:border-r'}">${isVoted ? '✓ Sudah Dipilih' : 'Pilih Kandidat Ini'}</button>
       </div>`;
     g.appendChild(d);
   });
@@ -737,8 +582,8 @@ function doVote(id) {
   if (voted !== null) {
     const name = cands.find(c => c.id === voted).name;
     toast.textContent = `Kamu sudah memilih ${name}. Terima kasih atas partisipasimu!`;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3500);
+    toast.classList.remove('hidden'); toast.classList.add('flex');
+    setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('flex'); }, 3500);
     return;
   }
   voted = id;
@@ -746,23 +591,26 @@ function doVote(id) {
   renderVote();
   const chosen = cands.find(c => c.id === id);
   toast.textContent = `Suaramu untuk ${chosen.name} berhasil dikirim! Terima kasih.`;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 4000);
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 4000);
 }
 renderVote();
 
+// forms
 function toggleForm(t) {
   const f = document.getElementById('form'+t);
   const b = document.getElementById('btn'+t);
   const open = f.classList.toggle('open');
   b.classList.toggle('open', open);
   b.textContent = open ? 'Tutup Formulir' : 'Buka Formulir Pendaftaran';
+  if (open) { b.style.background='#C41E3A'; b.style.color='#fff'; b.style.borderColor='#C41E3A'; }
+  else { b.style.background=''; b.style.color=''; b.style.borderColor=''; }
 }
 function submitReg(t) {
-  document.getElementById('done'+t).classList.add('show');
+  document.getElementById('done'+t).classList.remove('hidden');
+  document.getElementById('done'+t).classList.add('block');
   document.getElementById('form'+t).querySelectorAll('input,select,textarea').forEach(el => el.value='');
 }
 </script>
 </body>
-</html><div class="org-connector"></div>
-      <div class="org-row">
+</html>
