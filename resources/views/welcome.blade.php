@@ -411,13 +411,6 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- PENDAFTARAN -->
-<section id="pendaftaran" class="py-28 px-12">
-  <div class="max-w-[1120px] mx-auto">
-    <div class="mb-0 reveal">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-px bg-r"></div>
-</section>
 
 <!-- FOOTER -->
 <footer class="bg-ink px-12 py-12 flex items-center justify-between flex-wrap gap-6">
