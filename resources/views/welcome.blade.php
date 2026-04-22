@@ -417,9 +417,6 @@ tailwind.config = {
     <div class="mb-0 reveal">
       <div class="flex items-center gap-3 mb-4">
         <div class="w-8 h-px bg-r"></div>
-      
-    </div>
-  </div>
 </section>
 
 <!-- FOOTER -->
