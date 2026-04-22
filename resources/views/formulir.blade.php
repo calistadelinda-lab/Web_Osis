@@ -255,13 +255,13 @@ tailwind.config = {
         <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5">Bidang yang Diminati</label>
         <select id="a-bidang" class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
           <option value="">Pilih bidang</option>
-          <option>Sosial</option>
-          <option>Kreativitas &amp; Seni</option>
-          <option>Olahraga</option>
-          <option>Agama</option>
-          <option>Keamanan</option>
-          <option>Humas</option>
-          <option>Kesehatan</option>
+          <option value="sosial">Sosial</option>
+          <option value="Kreativitas &amp; seni">Kreativitas &amp; Seni</option>
+          <option value="Olahraga">Olahraga</option>
+          <option value="Agama">Agama</option>
+          <option value="Keamanan">Keamanan</option>
+          <option value="Humas">Humas</option>
+          <option value="Kesehatan">Kesehatan</option>
         </select>
       </div>
       <div class="mb-3">
