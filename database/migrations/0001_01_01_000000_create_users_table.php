@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nisn')->unique();
             $table->string('name');
             $table->string('kelas');
+            $table->boolean('voting_status')->default(false);
             $table->timestamps();
         });
 

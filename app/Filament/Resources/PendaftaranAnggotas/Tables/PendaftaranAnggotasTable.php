@@ -18,12 +18,10 @@ class PendaftaranAnggotasTable
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('nisn')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('kelas')
                     ->searchable(),
                 TextColumn::make('no_hp')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('bidang')
                     ->searchable(),

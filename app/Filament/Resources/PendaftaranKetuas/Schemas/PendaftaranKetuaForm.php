@@ -15,13 +15,11 @@ class PendaftaranKetuaForm
                 TextInput::make('nama')
                     ->required(),
                 TextInput::make('nisn')
-                    ->required()
-                    ->numeric(),
+                    ->required(),
                 TextInput::make('kelas')
                     ->required(),
                 TextInput::make('no_hp')
-                    ->required()
-                    ->numeric(),
+                    ->required()->numeric(),
                 TextInput::make('jabatan')
                     ->required(),
                 Textarea::make('visi')

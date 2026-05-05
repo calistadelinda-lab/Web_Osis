@@ -12,11 +12,9 @@ class PendaftaranKetuaInfolist
         return $schema
             ->components([
                 TextEntry::make('nama'),
-                TextEntry::make('nisn')
-                    ->numeric(),
+                TextEntry::make('nisn'),
                 TextEntry::make('kelas'),
-                TextEntry::make('no_hp')
-                    ->numeric(),
+                TextEntry::make('no_hp'),
                 TextEntry::make('jabatan'),
                 TextEntry::make('visi')
                     ->columnSpanFull(),

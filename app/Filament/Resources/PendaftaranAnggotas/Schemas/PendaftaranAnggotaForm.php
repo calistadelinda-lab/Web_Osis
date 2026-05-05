@@ -15,8 +15,10 @@ class PendaftaranAnggotaForm
                 TextInput::make('nama')
                     ->required(),
                 TextInput::make('nisn')
+                    ->numeric()
                     ->required(),
                 TextInput::make('kelas')
+                    ->numeric()
                     ->required(),
                 TextInput::make('no_hp')
                     ->required(),

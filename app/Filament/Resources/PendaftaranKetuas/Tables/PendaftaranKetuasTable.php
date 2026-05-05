@@ -18,12 +18,10 @@ class PendaftaranKetuasTable
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('nisn')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('kelas')
                     ->searchable(),
                 TextColumn::make('no_hp')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('jabatan')
                     ->searchable(),
@@ -41,7 +39,6 @@ class PendaftaranKetuasTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

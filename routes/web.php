@@ -2,11 +2,21 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PendaftaranAnggotaController;
+use App\Http\Controllers\PendaftaranKetuaController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/pendaftaran-osis', function () {
+    return view('formulir');
+})->name('pendaftaran-osis');
+
+
+Route::post('/pendaftaran-osis/anggota', [PendaftaranAnggotaController::class, 'store'])->name('pendaftaran-anggota.store');
+Route::post('/pendaftaran-osis/ketua', [PendaftaranKetuaController::class, 'store'])->name('pendaftaran-ketua.store');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
