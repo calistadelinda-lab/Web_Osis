@@ -40,9 +40,6 @@ tailwind.config = {
   .tab-btn:not(.active) .tab-icon { background:#E8E4DE; color:#9C948C; }
   .panel { display:none; }
   .panel.active { display:block; }
-  .success-box { display:none; }
-  .success-box.show { display:flex; animation: toastIn .3s ease; }
-  @keyframes toastIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
 </style>
 </head>
 <body class="bg-warm min-h-screen flex flex-col items-center justify-center py-12 px-4">
@@ -101,115 +98,129 @@ tailwind.config = {
 
     <div class="px-10 py-8">
 
-      {{-- Form Ketua/Wakil OSIS --}}
-      <form action="{{ route('pendaftaran-ketua.store') }}" method="POST">
-        @csrf
-
-        <div class="flex items-center gap-3 mb-5">
-          <div class="flex-1 h-px bg-line"></div>
-          <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Identitas Diri</span>
-          <div class="flex-1 h-px bg-line"></div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_nama">Nama Lengkap</label>
-            <input type="text" id="ketua_nama" name="nama" placeholder="Nama lengkap kamu" value="{{ old('nama') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('nama') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-          </div>
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_nisn">NISN</label>
-            <input type="text" id="ketua_nisn" name="nisn" placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('nisn') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+      @if (!\App\Models\SettingKetua::first()?->kondisi_daftar)
+        {{-- Pendaftaran Ketua ditutup --}}
+        <div class="flex items-start gap-3 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
+          <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">!</div>
+          <div class="text-[.77rem] text-r2 leading-relaxed">
+            <strong class="font-semibold">Pendaftaran ditutup sementara.</strong><br>
+            Tim OSIS sedang memproses pendaftaran yang masuk. Harap tunggu informasi selanjutnya.
           </div>
         </div>
+      @else
+        {{-- Form Ketua/Wakil OSIS --}}
+        <form action="{{ route('pendaftaran-ketua.store') }}" method="POST">
+          @csrf
 
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_kelas">Kelas</label>
-            <select id="ketua_kelas" name="kelas" required
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex-1 h-px bg-line"></div>
+            <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Identitas Diri</span>
+            <div class="flex-1 h-px bg-line"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_nama">Nama Lengkap</label>
+              <input type="text" id="ketua_nama" name="nama" placeholder="Nama lengkap kamu" value="{{ old('nama') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('nama') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_nisn">NISN</label>
+              <input type="text" id="ketua_nisn" name="nisn" placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('nisn') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_kelas">Kelas</label>
+              <select id="ketua_kelas" name="kelas" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
+                <option value="">Pilih kelas</option>
+                <option value="X TJKT 1" {{ old('kelas')=='X TJKT 1'?'selected':'' }}>X TJKT 1</option>
+                <option value="X TJKT 2" {{ old('kelas')=='X TJKT 2'?'selected':'' }}>X TJKT 2</option>
+                <option value="X TJKT 3" {{ old('kelas')=='X TJKT 3'?'selected':'' }}>X TJKT 3</option>
+                <option value="X PPLG 1" {{ old('kelas')=='X PPLG 1'?'selected':'' }}>X PPLG 1</option>
+                <option value="X PPLG 2" {{ old('kelas')=='X PPLG 2'?'selected':'' }}>X PPLG 2</option>
+                <option value="X PPLG 3" {{ old('kelas')=='X PPLG 3'?'selected':'' }}>X PPLG 3</option>
+                <option value="X BP"     {{ old('kelas')=='X BP'    ?'selected':'' }}>X BP</option>
+                <option value="XI TJA 1" {{ old('kelas')=='XI TJA 1'?'selected':'' }}>XI TJA 1</option>
+                <option value="XI TJA 2" {{ old('kelas')=='XI TJA 2'?'selected':'' }}>XI TJA 2</option>
+                <option value="XI TKJ 1" {{ old('kelas')=='XI TKJ 1'?'selected':'' }}>XI TKJ 1</option>
+                <option value="XI TKJ 2" {{ old('kelas')=='XI TKJ 2'?'selected':'' }}>XI TKJ 2</option>
+                <option value="XI RPL 1" {{ old('kelas')=='XI RPL 1'?'selected':'' }}>XI RPL 1</option>
+                <option value="XI RPL 2" {{ old('kelas')=='XI RPL 2'?'selected':'' }}>XI RPL 2</option>
+                <option value="XI RPL 3" {{ old('kelas')=='XI RPL 3'?'selected':'' }}>XI RPL 3</option>
+                <option value="XI PF 1"  {{ old('kelas')=='XI PF 1' ?'selected':'' }}>XI PF 1</option>
+                <option value="XI PF 2"  {{ old('kelas')=='XI PF 2' ?'selected':'' }}>XI PF 2</option>
+              </select>
+              @error('kelas') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_no_hp">No. HP / WhatsApp</label>
+              <input type="tel" id="ketua_no_hp" name="no_hp" placeholder="+62 8xx xxxx xxxx" value="{{ old('no_hp') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('no_hp') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_jabatan">Jabatan yang Dipilih</label>
+            <select id="ketua_jabatan" name="jabatan" required
               class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
-              <option value="">Pilih kelas</option>
-              <option value="X TJKT 1" {{ old('kelas')=='X TJKT 1'?'selected':'' }}>X TJKT 1</option>
-              <option value="X TJKT 2" {{ old('kelas')=='X TJKT 2'?'selected':'' }}>X TJKT 2</option>
-              <option value="X TJKT 3" {{ old('kelas')=='X TJKT 3'?'selected':'' }}>X TJKT 3</option>
-              <option value="X PPLG 1" {{ old('kelas')=='X PPLG 1'?'selected':'' }}>X PPLG 1</option>
-              <option value="X PPLG 2" {{ old('kelas')=='X PPLG 2'?'selected':'' }}>X PPLG 2</option>
-              <option value="X PPLG 3" {{ old('kelas')=='X PPLG 3'?'selected':'' }}>X PPLG 3</option>
-              <option value="X BP"     {{ old('kelas')=='X BP'    ?'selected':'' }}>X BP</option>
-              <option value="XI TJA 1" {{ old('kelas')=='XI TJA 1'?'selected':'' }}>XI TJA 1</option>
-              <option value="XI TJA 2" {{ old('kelas')=='XI TJA 2'?'selected':'' }}>XI TJA 2</option>
-              <option value="XI TKJ 1" {{ old('kelas')=='XI TKJ 1'?'selected':'' }}>XI TKJ 1</option>
-              <option value="XI TKJ 2" {{ old('kelas')=='XI TKJ 2'?'selected':'' }}>XI TKJ 2</option>
-              <option value="XI RPL 1" {{ old('kelas')=='XI RPL 1'?'selected':'' }}>XI RPL 1</option>
-              <option value="XI RPL 2" {{ old('kelas')=='XI RPL 2'?'selected':'' }}>XI RPL 2</option>
-              <option value="XI RPL 3" {{ old('kelas')=='XI RPL 3'?'selected':'' }}>XI RPL 3</option>
-              <option value="XI PF 1"  {{ old('kelas')=='XI PF 1' ?'selected':'' }}>XI PF 1</option>
-              <option value="XI PF 2"  {{ old('kelas')=='XI PF 2' ?'selected':'' }}>XI PF 2</option>
+              <option value="">Pilih jabatan</option>
+              <option value="Ketua OSIS"       {{ old('jabatan')=='Ketua OSIS'      ?'selected':'' }}>Ketua OSIS</option>
+              <option value="Wakil Ketua OSIS" {{ old('jabatan')=='Wakil Ketua OSIS'?'selected':'' }}>Wakil Ketua OSIS</option>
             </select>
-            @error('kelas') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            @error('jabatan') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
           </div>
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_no_hp">No. HP / WhatsApp</label>
-            <input type="tel" id="ketua_no_hp" name="no_hp" placeholder="+62 8xx xxxx xxxx" value="{{ old('no_hp') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('no_hp') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex-1 h-px bg-line"></div>
+            <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Visi &amp; Misi</span>
+            <div class="flex-1 h-px bg-line"></div>
           </div>
-        </div>
 
-        <div class="mb-5">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_jabatan">Jabatan yang Dipilih</label>
-          <select id="ketua_jabatan" name="jabatan" required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
-            <option value="">Pilih jabatan</option>
-            <option value="Ketua OSIS"       {{ old('jabatan')=='Ketua OSIS'      ?'selected':'' }}>Ketua OSIS</option>
-            <option value="Wakil Ketua OSIS" {{ old('jabatan')=='Wakil Ketua OSIS'?'selected':'' }}>Wakil Ketua OSIS</option>
-          </select>
-          @error('jabatan') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          <div class="mb-3">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_visi">Visi</label>
+            <textarea id="ketua_visi" name="visi" placeholder="Tuliskan visi kamu sebagai Ketua / Wakil OSIS..." required
+              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('visi') }}</textarea>
+            @error('visi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+          </div>
 
-        <div class="flex items-center gap-3 mb-5">
-          <div class="flex-1 h-px bg-line"></div>
-          <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Visi &amp; Misi</span>
-          <div class="flex-1 h-px bg-line"></div>
-        </div>
+          <div class="mb-3">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_misi">Misi</label>
+            <textarea id="ketua_misi" name="misi" placeholder="Tuliskan misi dan program kerja utama kamu..." required
+              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('misi') }}</textarea>
+            @error('misi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+          </div>
 
-        <div class="mb-3">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_visi">Visi</label>
-          <textarea id="ketua_visi" name="visi" placeholder="Tuliskan visi kamu sebagai Ketua / Wakil OSIS..." required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('visi') }}</textarea>
-          @error('visi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          <div class="mb-5">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_motivasi">Motivasi Mencalonkan Diri</label>
+            <textarea id="ketua_motivasi" name="motivasi" placeholder="Ceritakan mengapa kamu ingin menjadi Ketua / Wakil OSIS..." required
+              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('motivasi') }}</textarea>
+            @error('motivasi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+          </div>
 
-        <div class="mb-3">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_misi">Misi</label>
-          <textarea id="ketua_misi" name="misi" placeholder="Tuliskan misi dan program kerja utama kamu..." required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('misi') }}</textarea>
-          @error('misi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          <button type="submit"
+            class="w-full py-3.5 bg-r text-white font-sans text-[.72rem] font-semibold tracking-[.12em] uppercase rounded-lg shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all">
+            Kirim Pendaftaran Ketua / Wakil →
+          </button>
 
-        <div class="mb-5">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="ketua_motivasi">Motivasi Mencalonkan Diri</label>
-          <textarea id="ketua_motivasi" name="motivasi" placeholder="Ceritakan mengapa kamu ingin menjadi Ketua / Wakil OSIS..." required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('motivasi') }}</textarea>
-          @error('motivasi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          @if(session('success_ketua'))
+          <div class="flex items-start gap-3 mt-5 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
+            <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">✓</div>
+            <div class="text-[.77rem] text-r2 leading-relaxed">
+              <strong class="font-semibold">Pendaftaran berhasil dikirim!</strong><br>
+              Tim OSIS akan menghubungimu dalam 2–3 hari kerja. Tetap semangat!
+            </div>
+          </div>
+          @endif
 
-        <button type="submit"
-          class="w-full py-3.5 bg-r text-white font-sans text-[.72rem] font-semibold tracking-[.12em] uppercase rounded-lg shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all">
-          Kirim Pendaftaran Ketua / Wakil →
-        </button>
-
-        @if(session('success_ketua'))
-        <div class="flex items-start gap-3 mt-5 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
-          <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">✓</div>
-          <div class="text-[.77rem] text-r2 leading-relaxed"><strong class="font-semibold">Pendaftaran berhasil dikirim!</strong><br>Tim OSIS akan menghubungimu dalam 2–3 hari kerja. Tetap semangat!</div>
-        </div>
-        @endif
-
-      </form>
+        </form>
+      @endif
 
     </div>
   </div><!-- /panel-ketua -->
@@ -235,113 +246,127 @@ tailwind.config = {
 
     <div class="px-10 py-8">
 
-      {{-- Form Anggota OSIS --}}
-      <form action="{{ route('pendaftaran-anggota.store') }}" method="POST">
-        @csrf
-
-        <div class="flex items-center gap-3 mb-5">
-          <div class="flex-1 h-px bg-line"></div>
-          <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Identitas Diri</span>
-          <div class="flex-1 h-px bg-line"></div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_nama">Nama Lengkap</label>
-            <input type="text" id="anggota_nama" name="nama" placeholder="Nama lengkap kamu" value="{{ old('nama') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('nama') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-          </div>
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_nisn">NISN</label>
-            <input type="text" id="anggota_nisn" name="nisn" placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('nisn') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+      @if (!\App\Models\SettingAnggota::first()?->kondisi_daftar)
+        {{-- Pendaftaran Anggota ditutup --}}
+        <div class="flex items-start gap-3 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
+          <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">!</div>
+          <div class="text-[.77rem] text-r2 leading-relaxed">
+            <strong class="font-semibold">Pendaftaran ditutup sementara.</strong><br>
+            Tim OSIS sedang memproses pendaftaran yang masuk. Harap tunggu informasi selanjutnya.
           </div>
         </div>
+      @else
+        {{-- Form Anggota OSIS --}}
+        <form action="{{ route('pendaftaran-anggota.store') }}" method="POST">
+          @csrf
 
-        <div class="grid grid-cols-2 gap-3 mb-5">
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_kelas">Kelas</label>
-            <select id="anggota_kelas" name="kelas" required
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex-1 h-px bg-line"></div>
+            <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Identitas Diri</span>
+            <div class="flex-1 h-px bg-line"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_nama">Nama Lengkap</label>
+              <input type="text" id="anggota_nama" name="nama" placeholder="Nama lengkap kamu" value="{{ old('nama') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('nama') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_nisn">NISN</label>
+              <input type="text" id="anggota_nisn" name="nisn" placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('nisn') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_kelas">Kelas</label>
+              <select id="anggota_kelas" name="kelas" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
+                <option value="">Pilih kelas</option>
+                <option value="X TJKT 1" {{ old('kelas')=='X TJKT 1'?'selected':'' }}>X TJKT 1</option>
+                <option value="X TJKT 2" {{ old('kelas')=='X TJKT 2'?'selected':'' }}>X TJKT 2</option>
+                <option value="X TJKT 3" {{ old('kelas')=='X TJKT 3'?'selected':'' }}>X TJKT 3</option>
+                <option value="X PPLG 1" {{ old('kelas')=='X PPLG 1'?'selected':'' }}>X PPLG 1</option>
+                <option value="X PPLG 2" {{ old('kelas')=='X PPLG 2'?'selected':'' }}>X PPLG 2</option>
+                <option value="X PPLG 3" {{ old('kelas')=='X PPLG 3'?'selected':'' }}>X PPLG 3</option>
+                <option value="X BP"     {{ old('kelas')=='X BP'    ?'selected':'' }}>X BP</option>
+                <option value="XI TJA 1" {{ old('kelas')=='XI TJA 1'?'selected':'' }}>XI TJA 1</option>
+                <option value="XI TJA 2" {{ old('kelas')=='XI TJA 2'?'selected':'' }}>XI TJA 2</option>
+                <option value="XI TKJ 1" {{ old('kelas')=='XI TKJ 1'?'selected':'' }}>XI TKJ 1</option>
+                <option value="XI TKJ 2" {{ old('kelas')=='XI TKJ 2'?'selected':'' }}>XI TKJ 2</option>
+                <option value="XI RPL 1" {{ old('kelas')=='XI RPL 1'?'selected':'' }}>XI RPL 1</option>
+                <option value="XI RPL 2" {{ old('kelas')=='XI RPL 2'?'selected':'' }}>XI RPL 2</option>
+                <option value="XI RPL 3" {{ old('kelas')=='XI RPL 3'?'selected':'' }}>XI RPL 3</option>
+                <option value="XI PF 1"  {{ old('kelas')=='XI PF 1' ?'selected':'' }}>XI PF 1</option>
+                <option value="XI PF 2"  {{ old('kelas')=='XI PF 2' ?'selected':'' }}>XI PF 2</option>
+              </select>
+              @error('kelas') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+              <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_no_hp">No. HP / WhatsApp</label>
+              <input type="tel" id="anggota_no_hp" name="no_hp" placeholder="+62 8xx xxxx xxxx" value="{{ old('no_hp') }}" required
+                class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
+              @error('no_hp') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex-1 h-px bg-line"></div>
+            <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Minat &amp; Bakat</span>
+            <div class="flex-1 h-px bg-line"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_bidang">Bidang yang Diminati</label>
+            <select id="anggota_bidang" name="bidang" required
               class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
-              <option value="">Pilih kelas</option>
-              <option value="X TJKT 1" {{ old('kelas')=='X TJKT 1'?'selected':'' }}>X TJKT 1</option>
-              <option value="X TJKT 2" {{ old('kelas')=='X TJKT 2'?'selected':'' }}>X TJKT 2</option>
-              <option value="X TJKT 3" {{ old('kelas')=='X TJKT 3'?'selected':'' }}>X TJKT 3</option>
-              <option value="X PPLG 1" {{ old('kelas')=='X PPLG 1'?'selected':'' }}>X PPLG 1</option>
-              <option value="X PPLG 2" {{ old('kelas')=='X PPLG 2'?'selected':'' }}>X PPLG 2</option>
-              <option value="X PPLG 3" {{ old('kelas')=='X PPLG 3'?'selected':'' }}>X PPLG 3</option>
-              <option value="X BP"     {{ old('kelas')=='X BP'    ?'selected':'' }}>X BP</option>
-              <option value="XI TJA 1" {{ old('kelas')=='XI TJA 1'?'selected':'' }}>XI TJA 1</option>
-              <option value="XI TJA 2" {{ old('kelas')=='XI TJA 2'?'selected':'' }}>XI TJA 2</option>
-              <option value="XI TKJ 1" {{ old('kelas')=='XI TKJ 1'?'selected':'' }}>XI TKJ 1</option>
-              <option value="XI TKJ 2" {{ old('kelas')=='XI TKJ 2'?'selected':'' }}>XI TKJ 2</option>
-              <option value="XI RPL 1" {{ old('kelas')=='XI RPL 1'?'selected':'' }}>XI RPL 1</option>
-              <option value="XI RPL 2" {{ old('kelas')=='XI RPL 2'?'selected':'' }}>XI RPL 2</option>
-              <option value="XI RPL 3" {{ old('kelas')=='XI RPL 3'?'selected':'' }}>XI RPL 3</option>
-              <option value="XI PF 1"  {{ old('kelas')=='XI PF 1' ?'selected':'' }}>XI PF 1</option>
-              <option value="XI PF 2"  {{ old('kelas')=='XI PF 2' ?'selected':'' }}>XI PF 2</option>
+              <option value="">Pilih bidang</option>
+              <option value="Sosial"            {{ old('bidang')=='Sosial'           ?'selected':'' }}>Sosial</option>
+              <option value="Kreativitas & Seni" {{ old('bidang')=='Kreativitas & Seni'?'selected':'' }}>Kreativitas &amp; Seni</option>
+              <option value="Olahraga"          {{ old('bidang')=='Olahraga'         ?'selected':'' }}>Olahraga</option>
+              <option value="Agama"             {{ old('bidang')=='Agama'            ?'selected':'' }}>Agama</option>
+              <option value="Keamanan"          {{ old('bidang')=='Keamanan'         ?'selected':'' }}>Keamanan</option>
+              <option value="Humas"             {{ old('bidang')=='Humas'            ?'selected':'' }}>Humas</option>
+              <option value="Kesehatan"         {{ old('bidang')=='Kesehatan'        ?'selected':'' }}>Kesehatan</option>
             </select>
-            @error('kelas') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+            @error('bidang') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
           </div>
-          <div>
-            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_no_hp">No. HP / WhatsApp</label>
-            <input type="tel" id="anggota_no_hp" name="no_hp" placeholder="+62 8xx xxxx xxxx" value="{{ old('no_hp') }}" required
-              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors"/>
-            @error('no_hp') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+
+          <div class="mb-3">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_pengalaman">Pengalaman Organisasi</label>
+            <textarea id="anggota_pengalaman" name="pengalaman" placeholder="Ceritakan pengalaman organisasi atau kepanitiaan sebelumnya (jika ada)..."
+              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('pengalaman') }}</textarea>
+            @error('pengalaman') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
           </div>
-        </div>
 
-        <div class="flex items-center gap-3 mb-5">
-          <div class="flex-1 h-px bg-line"></div>
-          <span class="text-[.58rem] font-semibold tracking-[.14em] uppercase text-muted">Minat &amp; Bakat</span>
-          <div class="flex-1 h-px bg-line"></div>
-        </div>
+          <div class="mb-5">
+            <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_motivasi">Motivasi Bergabung</label>
+            <textarea id="anggota_motivasi" name="motivasi" placeholder="Mengapa kamu ingin bergabung dengan OSIS?" required
+              class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('motivasi') }}</textarea>
+            @error('motivasi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
+          </div>
 
-        <div class="mb-3">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_bidang">Bidang yang Diminati</label>
-          <select id="anggota_bidang" name="bidang" required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors">
-            <option value="">Pilih bidang</option>
-            <option value="Sosial"           {{ old('bidang')=='Sosial'          ?'selected':'' }}>Sosial</option>
-            <option value="Kreativitas & Seni"{{ old('bidang')=='Kreativitas & Seni'?'selected':'' }}>Kreativitas &amp; Seni</option>
-            <option value="Olahraga"         {{ old('bidang')=='Olahraga'        ?'selected':'' }}>Olahraga</option>
-            <option value="Agama"            {{ old('bidang')=='Agama'           ?'selected':'' }}>Agama</option>
-            <option value="Keamanan"         {{ old('bidang')=='Keamanan'        ?'selected':'' }}>Keamanan</option>
-            <option value="Humas"            {{ old('bidang')=='Humas'           ?'selected':'' }}>Humas</option>
-            <option value="Kesehatan"        {{ old('bidang')=='Kesehatan'       ?'selected':'' }}>Kesehatan</option>
-          </select>
-          @error('bidang') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          <button type="submit"
+            class="w-full py-3.5 bg-r text-white font-sans text-[.72rem] font-semibold tracking-[.12em] uppercase rounded-lg shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all">
+            Kirim Pendaftaran Anggota →
+          </button>
 
-        <div class="mb-3">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_pengalaman">Pengalaman Organisasi</label>
-          <textarea id="anggota_pengalaman" name="pengalaman" placeholder="Ceritakan pengalaman organisasi atau kepanitiaan sebelumnya (jika ada)..."
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('pengalaman') }}</textarea>
-          @error('pengalaman') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
+          @if(session('success_anggota'))
+          <div class="flex items-start gap-3 mt-5 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
+            <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">✓</div>
+            <div class="text-[.77rem] text-r2 leading-relaxed">
+              <strong class="font-semibold">Pendaftaran berhasil dikirim!</strong><br>
+              Tim OSIS akan menghubungimu dalam 2–3 hari kerja. Tetap semangat!
+            </div>
+          </div>
+          @endif
 
-        <div class="mb-5">
-          <label class="block text-[.58rem] font-semibold tracking-[.1em] uppercase text-muted mb-1.5" for="anggota_motivasi">Motivasi Bergabung</label>
-          <textarea id="anggota_motivasi" name="motivasi" placeholder="Mengapa kamu ingin bergabung dengan OSIS?" required
-            class="w-full px-3.5 py-2.5 border border-line rounded-md font-sans text-[.8rem] font-light text-ink bg-off transition-colors resize-y min-h-[68px]">{{ old('motivasi') }}</textarea>
-          @error('motivasi') <p class="text-r text-[.65rem] mt-1">{{ $message }}</p> @enderror
-        </div>
-
-        <button type="submit"
-          class="w-full py-3.5 bg-r text-white font-sans text-[.72rem] font-semibold tracking-[.12em] uppercase rounded-lg shadow-[0_4px_20px_rgba(196,30,58,.25)] hover:bg-r2 hover:-translate-y-px transition-all">
-          Kirim Pendaftaran Anggota →
-        </button>
-
-        @if(session('success_anggota'))
-        <div class="flex items-start gap-3 mt-5 p-4 bg-rpale border border-rsoft border-l-[3px] border-l-r rounded-lg">
-          <div class="w-6 h-6 rounded-full bg-r flex items-center justify-center flex-shrink-0 text-white text-[.65rem]">✓</div>
-          <div class="text-[.77rem] text-r2 leading-relaxed"><strong class="font-semibold">Pendaftaran berhasil dikirim!</strong><br>Tim OSIS akan menghubungimu dalam 2–3 hari kerja. Tetap semangat!</div>
-        </div>
-        @endif
-
-      </form>
+        </form>
+      @endif
 
     </div>
   </div><!-- /panel-anggota -->

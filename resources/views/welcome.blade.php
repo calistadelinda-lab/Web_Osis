@@ -117,7 +117,7 @@ tailwind.config = {
     <li><a href="#profil"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Profil</a></li>
     <li><a href="#visi-misi" class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Visi Misi</a></li>
     <li><a href="#struktur"  class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Struktur</a></li>
-    <li><a href="#galeri"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Galeri</a></li>
+    {{-- <li><a href="#galeri"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Galeri</a></li> --}}
     <li><a href="#voting"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Voting</a></li>
   </ul>
   <a href="/views" class="px-5 py-2 bg-r text-white no-underline rounded text-[.72rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.28)] hover:bg-r2 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(196,30,58,.35)] transition-all">Daftar Sekarang</a>
@@ -324,7 +324,7 @@ tailwind.config = {
 </section>
 
 <!-- GALERI -->
-<section id="galeri" class="py-28 px-12">
+{{-- <section id="galeri" class="py-28 px-12">
   <div class="max-w-[1120px] mx-auto">
     <div class="mb-0 reveal">
       <div class="flex items-center gap-3 mb-4">
@@ -381,7 +381,7 @@ tailwind.config = {
       </div>
     </div>
   </div>
-</section>
+</section> --}}
 
 <!-- VOTING -->
 <section id="voting" class="py-28 px-12 bg-warm">

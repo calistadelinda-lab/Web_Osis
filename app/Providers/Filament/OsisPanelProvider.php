@@ -28,6 +28,7 @@ class OsisPanelProvider extends PanelProvider
             ->id('osis')
             ->path('osis')
             ->login()
+            ->authGuard('admin')
             ->colors([
                 'primary' => Color::Amber,
             ])
