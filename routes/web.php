@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PendaftaranAnggotaController;
 use App\Http\Controllers\PendaftaranKetuaController;
+use App\Models\Pemilihan;
 
 
 Route::get('/', function () {
@@ -22,7 +23,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/voting', function () {
-    return view('voting');
+    $candidates = Pemilihan::orderBy('id')->get();
+
+    return view('voting', [
+        'candidates' => $candidates,
+    ]);
 })->middleware(['auth'])->name('vote');
 
 Route::middleware('auth')->group(function () {

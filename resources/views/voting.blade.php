@@ -206,180 +206,78 @@
         @csrf
 
         {{-- GRID KANDIDAT --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10" id="kandidat-grid">
+        @php
+            $gridLayoutClass = $candidates->count() <= 2
+                ? 'grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-4xl mx-auto'
+                : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10';
+        @endphp
+        <div class="{{ $gridLayoutClass }}" id="kandidat-grid">
+            @foreach($candidates as $candidate)
+                @php
+                    $index = $loop->iteration;
+                    $number = str_pad($index, 2, '0', STR_PAD_LEFT);
+                    $ketuaImage = $candidate->Foto_Ketua ? asset('storage/' . $candidate->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true';
+                    $wakilImage = $candidate->Foto_Wakil ? asset('storage/' . $candidate->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true';
+                @endphp
 
-            {{-- ------------------------------------------------
-                 KANDIDAT 1
-                 ------------------------------------------------ --}}
-            <div class="candidate-card bg-white rounded-2xl shadow-card p-6 flex flex-col"
-                 onclick="pilih(this, '1')">
+                <div class="candidate-card bg-white rounded-2xl shadow-card p-6 flex flex-col"
+                     onclick="pilih(this, '{{ $index }}')">
 
-                {{-- Badge centang --}}
-                <div class="select-badge absolute -top-3 -right-3 w-8 h-8 bg-merah-600 rounded-full flex items-center justify-center shadow-md">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-
-                {{-- Nomor urut --}}
-                <div class="flex items-center justify-between mb-5">
-                    <span class="text-xs font-semibold tracking-widest text-gray-400 uppercase font-body">Paslon 01</span>
-                    <span class="w-7 h-7 rounded-full bg-merah-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-                </div>
-
-                {{-- Foto kandidat --}}
-                <div class="flex justify-center gap-4 mb-5">
-                    {{-- Ketua --}}
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100 flex items-center justify-center">
-                            {{-- Ganti src dengan: {{ asset('images/kandidat1a.jpg') }} --}}
-                            <img src="https://ui-avatars.com/api/?name=Arya+Bima&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Arya Bima"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <p class="text-[10px] text-gray-400 font-body">Ketua</p>
+                    <div class="select-badge absolute -top-3 -right-3 w-8 h-8 bg-merah-600 rounded-full flex items-center justify-center shadow-md">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
                     </div>
-                    {{-- Wakil --}}
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100 flex items-center justify-center">
-                            <img src="https://ui-avatars.com/api/?name=Sari+Dewi&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Sari Dewi"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <p class="text-[10px] text-gray-400 font-body">Wakil</p>
+
+                    <div class="flex items-center justify-between mb-5">
+                        <span class="text-xs font-semibold tracking-widest text-gray-400 uppercase font-body">Paslon {{ $number }}</span>
+                        <span class="w-7 h-7 rounded-full bg-merah-600 text-white text-xs font-bold flex items-center justify-center">{{ $index }}</span>
                     </div>
-                </div>
 
-                {{-- Nama --}}
-                <div class="text-center mb-4">
-                    <h2 class="font-display text-gray-900 text-lg leading-snug">Arya Bima S.</h2>
-                    <p class="text-merah-600 text-sm font-medium font-body mt-0.5">&amp; Sari Dewi P.</p>
-                </div>
-
-                {{-- Garis pembatas --}}
-                <div class="ornament-line h-px w-full mb-4 opacity-30"></div>
-
-                {{-- Visi --}}
-                <p class="text-gray-500 text-xs sm:text-sm font-body leading-relaxed text-center flex-1">
-                    "Membangun OSIS yang transparan, aktif, dan berpihak pada aspirasi seluruh siswa."
-                </p>
-
-                {{-- Tombol Pilih --}}
-                <input type="radio" name="kandidat" id="kandidat1" value="1">
-                <button type="button"
-                        class="btn-pilih mt-5 w-full py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold font-body tracking-wide hover:border-merah-500 hover:text-merah-600 focus:outline-none">
-                    Pilih Paslon Ini
-                </button>
-            </div>
-
-            {{-- ------------------------------------------------
-                 KANDIDAT 2
-                 ------------------------------------------------ --}}
-            <div class="candidate-card bg-white rounded-2xl shadow-card p-6 flex flex-col"
-                 onclick="pilih(this, '2')">
-
-                <div class="select-badge absolute -top-3 -right-3 w-8 h-8 bg-merah-600 rounded-full flex items-center justify-center shadow-md">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-
-                <div class="flex items-center justify-between mb-5">
-                    <span class="text-xs font-semibold tracking-widest text-gray-400 uppercase font-body">Paslon 02</span>
-                    <span class="w-7 h-7 rounded-full bg-merah-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-                </div>
-
-                <div class="flex justify-center gap-4 mb-5">
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100">
-                            <img src="https://ui-avatars.com/api/?name=Reza+Fadhil&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Reza Fadhil"
-                                 class="w-full h-full object-cover">
+                    <div class="flex justify-center gap-4 mb-5">
+                        <div class="text-center">
+                            <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100 flex items-center justify-center">
+                                <img src="{{ $ketuaImage }}"
+                                     alt="{{ $candidate->Nama_Ketua }}"
+                                     class="w-full h-full object-cover">
+                            </div>
+                            <p class="text-[10px] text-gray-400 font-body">Ketua</p>
                         </div>
-                        <p class="text-[10px] text-gray-400 font-body">Ketua</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100">
-                            <img src="https://ui-avatars.com/api/?name=Nadia+Putri&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Nadia Putri"
-                                 class="w-full h-full object-cover">
+                        <div class="text-center">
+                            <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100 flex items-center justify-center">
+                                <img src="{{ $wakilImage }}"
+                                     alt="{{ $candidate->Nama_Wakil }}"
+                                     class="w-full h-full object-cover">
+                            </div>
+                            <p class="text-[10px] text-gray-400 font-body">Wakil</p>
                         </div>
-                        <p class="text-[10px] text-gray-400 font-body">Wakil</p>
                     </div>
-                </div>
 
-                <div class="text-center mb-4">
-                    <h2 class="font-display text-gray-900 text-lg leading-snug">Reza Fadhil A.</h2>
-                    <p class="text-merah-600 text-sm font-medium font-body mt-0.5">&amp; Nadia Putri R.</p>
-                </div>
+                    <div class="text-center mb-4">
+                        <h2 class="font-display text-gray-900 text-lg leading-snug">{{ $candidate->Nama_Ketua }}</h2>
+                        <p class="text-merah-600 text-sm font-medium font-body mt-0.5">&amp; {{ $candidate->Nama_Wakil }}</p>
+                    </div>
 
-                <div class="ornament-line h-px w-full mb-4 opacity-30"></div>
+                    <div class="ornament-line h-px w-full mb-4 opacity-30"></div>
 
-                <p class="text-gray-500 text-xs sm:text-sm font-body leading-relaxed text-center flex-1">
-                    "Inovasi, kolaborasi, dan kreativitas sebagai fondasi OSIS yang menginspirasi generasi muda."
-                </p>
-
-                <input type="radio" name="kandidat" id="kandidat2" value="2">
-                <button type="button"
-                        class="btn-pilih mt-5 w-full py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold font-body tracking-wide hover:border-merah-500 hover:text-merah-600 focus:outline-none">
-                    Pilih Paslon Ini
-                </button>
-            </div>
-
-            {{-- ------------------------------------------------
-                 KANDIDAT 3
-                 ------------------------------------------------ --}}
-            <div class="candidate-card bg-white rounded-2xl shadow-card p-6 flex flex-col sm:col-span-2 lg:col-span-1"
-                 onclick="pilih(this, '3')">
-
-                <div class="select-badge absolute -top-3 -right-3 w-8 h-8 bg-merah-600 rounded-full flex items-center justify-center shadow-md">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-
-                <div class="flex items-center justify-between mb-5">
-                    <span class="text-xs font-semibold tracking-widest text-gray-400 uppercase font-body">Paslon 03</span>
-                    <span class="w-7 h-7 rounded-full bg-merah-600 text-white text-xs font-bold flex items-center justify-center">3</span>
-                </div>
-
-                <div class="flex justify-center gap-4 mb-5">
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100">
-                            <img src="https://ui-avatars.com/api/?name=Dimas+Hendra&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Dimas Hendra"
-                                 class="w-full h-full object-cover">
+                    <div class="flex-1 text-left">
+                        <div class="mb-3 text-gray-500 text-xs sm:text-sm font-body leading-relaxed">
+                            <span class="font-semibold text-gray-700">Visi:</span>
+                            {{ $candidate->Visi }}
                         </div>
-                        <p class="text-[10px] text-gray-400 font-body">Ketua</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="avatar-bg w-20 h-20 rounded-xl mx-auto mb-1 overflow-hidden border-2 border-merah-100">
-                            <img src="https://ui-avatars.com/api/?name=Layla+Zahira&background=fde8e8&color=c10e0e&size=80&font-size=0.35&bold=true"
-                                 alt="Layla Zahira"
-                                 class="w-full h-full object-cover">
+                        <div class="text-gray-500 text-xs sm:text-sm font-body leading-relaxed">
+                            <span class="font-semibold text-gray-700">Misi:</span>
+                            {{ $candidate->Misi }}
                         </div>
-                        <p class="text-[10px] text-gray-400 font-body">Wakil</p>
                     </div>
+
+                    <input type="radio" name="kandidat" id="kandidat{{ $index }}" value="{{ $index }}">
+                    <button type="button"
+                            class="btn-pilih mt-5 w-full py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold font-body tracking-wide hover:border-merah-500 hover:text-merah-600 focus:outline-none">
+                        Pilih Paslon Ini
+                    </button>
                 </div>
-
-                <div class="text-center mb-4">
-                    <h2 class="font-display text-gray-900 text-lg leading-snug">Dimas Hendra W.</h2>
-                    <p class="text-merah-600 text-sm font-medium font-body mt-0.5">&amp; Layla Zahira F.</p>
-                </div>
-
-                <div class="ornament-line h-px w-full mb-4 opacity-30"></div>
-
-                <p class="text-gray-500 text-xs sm:text-sm font-body leading-relaxed text-center flex-1">
-                    "Mewujudkan lingkungan sekolah yang inklusif, berkarakter, dan berdaya saing tinggi."
-                </p>
-
-                <input type="radio" name="kandidat" id="kandidat3" value="3">
-                <button type="button"
-                        class="btn-pilih mt-5 w-full py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold font-body tracking-wide hover:border-merah-500 hover:text-merah-600 focus:outline-none">
-                    Pilih Paslon Ini
-                </button>
-            </div>
-
+            @endforeach
         </div>{{-- END grid --}}
 
         {{-- ============================================================
@@ -455,11 +353,13 @@
      ============================================================ --}}
 <script>
     // Data kandidat untuk ditampilkan di modal
-    const kandidatData = {
-        '1': 'Paslon 01 — Arya Bima S. & Sari Dewi P.',
-        '2': 'Paslon 02 — Reza Fadhil A. & Nadia Putri R.',
-        '3': 'Paslon 03 — Dimas Hendra W. & Layla Zahira F.',
-    };
+    @php
+        $kandidatData = [];
+        foreach ($candidates as $index => $candidate) {
+            $kandidatData[(string) ($index + 1)] = 'Paslon ' . str_pad($index + 1, 2, '0', STR_PAD_LEFT) . ' — ' . $candidate->Nama_Ketua . ' & ' . $candidate->Nama_Wakil;
+        }
+    @endphp
+    const kandidatData = @json($kandidatData);
 
     let selectedValue = null;
 

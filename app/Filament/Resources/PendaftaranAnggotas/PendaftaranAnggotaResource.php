@@ -19,6 +19,14 @@ use Filament\Tables\Table;
 class PendaftaranAnggotaResource extends Resource
 {
     protected static ?string $model = PendaftaranAnggota::class;
+   // 1. Mengubah nama di Sidebar
+    protected static ?string $navigationLabel = 'Pendaftaran Anggota OSIS';
+
+    // 2. Mengubah judul besar di Header halaman dan Breadcrumbs
+    protected static ?string $pluralModelLabel = 'Pendaftaran Anggota OSIS';
+
+    // 3. Mengubah label saat membuat data baru (misal: "Create Calon Ketua & Wakil OSIS")
+    protected static ?string $modelLabel = 'Pendaftaran Anggota OSIS';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
