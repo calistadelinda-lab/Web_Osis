@@ -6,6 +6,9 @@
 <title>OSIS SMK Negeri 5 Telkom</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
+@php
+use App\Models\Pemilihan;
+@endphp
 <script>
 tailwind.config = {
   theme: {
@@ -398,13 +401,36 @@ tailwind.config = {
       <div class="py-2 px-4 bg-rpale border border-rsoft rounded text-[.68rem] font-semibold text-r tracking-[.06em] whitespace-nowrap">⏱ Voting Ditutup</div>
     </div>
 
-    <div id="toast" class="hidden vote-toast py-4 px-6 bg-white border border-rsoft rounded-lg border-l-[3px] border-l-r text-[.8rem] text-r font-medium mb-5"></div>
-    <div class="grid grid-cols-3 gap-5 reveal" id="cGrid"></div>
+    @php
+        $candidates = Pemilihan::orderBy('Jumlah_Suara', 'desc')->get();
+        $winner = $candidates->first();
+        $totalVotes = $candidates->sum('Jumlah_Suara');
+    @endphp
+
+    {{-- PEMENANG SEMENTARA --}}
+    @if($winner)
+    <div class="bg-gradient-to-r from-r to-r2 rounded-2xl p-8 mb-8 text-white text-center reveal">
+      <div class="text-[.62rem] font-semibold tracking-[.2em] uppercase opacity-75 mb-2">🏆 PEMENANG SEMENTARA</div>
+      <div class="font-serif text-[2rem] font-bold mb-2">{{ $winner->Nama_Ketua }} & {{ $winner->Nama_Wakil }}</div>
+      <div class="text-[.88rem] opacity-90 mb-4">{{ $winner->Jumlah_Suara }} suara ({{ $totalVotes > 0 ? round(($winner->Jumlah_Suara / $totalVotes) * 100) : 0 }}%)</div>
+      <div class="flex justify-center gap-4">
+        <img src="{{ $winner->Foto_Ketua ? asset('storage/' . $winner->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Ketua }}" class="w-16 h-16 rounded-full border-2 border-white/30">
+        <img src="{{ $winner->Foto_Wakil ? asset('storage/' . $winner->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Wakil }}" class="w-16 h-16 rounded-full border-2 border-white/30">
+      </div>
+    </div>
+    @endif
+
+    @php
+        $gridLayoutClass = $candidates->count() <= 2
+            ? 'grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-4xl mx-auto'
+            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5';
+    @endphp
+    <div class="{{ $gridLayoutClass }} reveal" id="cGrid"></div>
 
     <div class="flex items-center justify-between mt-10 px-8 py-6 bg-warm rounded-xl border border-line flex-wrap gap-4 reveal">
       <div>
         <div class="text-[.62rem] font-semibold tracking-[.16em] uppercase text-muted mb-1">Total Suara Masuk</div>
-        <div class="font-serif text-[2.5rem] font-semibold text-r leading-none" id="vTotal">—</div>
+        <div class="font-serif text-[2.5rem] font-semibold text-r leading-none" id="vTotal">{{ $totalVotes }}</div>
       </div>
       <div class="text-[.72rem] font-light text-muted text-right leading-relaxed">Data diperbarui secara real-time<br>setiap suara masuk</div>
     </div>
@@ -455,10 +481,20 @@ const ro = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
 // voting
-const cands = [
-  { id:1, name:'Rizky Ardiansyah', num:'01', tagline:'Inovatif, inklusif, dan berdampak untuk seluruh warga SMK 5 Telkom.', emo:'😊', votes:0 },
-  { id:2, name:'Nayla Putri',       num:'02', tagline:'Bersama kita lebih kuat — OSIS yang terbuka dan kolaboratif.', emo:'🌟', votes:0 },
-];
+@php
+    $candsData = $candidates->map(function ($candidate, $index) {
+        return [
+            'id' => $candidate->id,
+            'name' => $candidate->Nama_Ketua . ' & ' . $candidate->Nama_Wakil,
+            'num' => str_pad($index + 1, 2, '0', STR_PAD_LEFT),
+            'tagline' => $candidate->Visi . ' — ' . $candidate->Misi,
+            'foto_ketua' => $candidate->Foto_Ketua ? asset('storage/' . $candidate->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
+            'foto_wakil' => $candidate->Foto_Wakil ? asset('storage/' . $candidate->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
+            'votes' => $candidate->Jumlah_Suara,
+        ];
+    })->toArray();
+@endphp
+const cands = @json($candsData);
 let voted = null;
 
 function renderVote() {
@@ -467,21 +503,22 @@ function renderVote() {
   const tot = cands.reduce((a,c) => a+c.votes, 0);
   cands.forEach(c => {
     const pct = tot > 0 ? Math.round(c.votes/tot*100) : 0;
-    const isVoted = voted === c.id;
     const d = document.createElement('div');
-    d.className = `border rounded-2xl overflow-hidden bg-white transition-all duration-300 relative ${isVoted ? 'border-r shadow-[0_8px_40px_rgba(196,30,58,.18)]' : 'border-line hover:border-rsoft hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] hover:-translate-y-1'}`;
+    d.className = `border rounded-2xl overflow-hidden bg-white transition-all duration-300 relative border-line hover:border-rsoft hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] hover:-translate-y-1`;
     d.innerHTML = `
-      <div class="${isVoted ? 'bg-gradient-to-br from-rpale to-rsoft' : 'bg-rpale'} px-6 pt-10 pb-6 text-center relative">
+      <div class="bg-rpale px-6 pt-10 pb-6 text-center relative">
         <div class="absolute top-4 left-4 w-7 h-7 rounded-full bg-r text-white flex items-center justify-center text-[.62rem] font-bold">${c.num}</div>
-        ${isVoted ? `<div class="absolute top-4 right-4 w-7 h-7 rounded-full bg-r text-white flex items-center justify-center text-[.8rem]">✓</div>` : ''}
-        <div class="${isVoted ? 'border-r' : 'border-[rgba(196,30,58,.15)]'} w-20 h-20 rounded-full mx-auto mb-4 bg-white border-[3px] flex items-center justify-center text-[2rem] transition-colors">${c.emo}</div>
-        <div class="font-serif text-[1.3rem] font-semibold text-ink mb-1">${c.name}</div>
-        <p class="text-[.75rem] font-light text-sub leading-relaxed">${c.tagline}</p>
+        <div class="flex justify-center gap-3 mb-4">
+          <img src="${c.foto_ketua}" alt="Ketua" class="border-[rgba(196,30,58,.15)] w-16 h-16 rounded-full bg-white border-[2px] object-cover">
+          <img src="${c.foto_wakil}" alt="Wakil" class="border-[rgba(196,30,58,.15)] w-16 h-16 rounded-full bg-white border-[2px] object-cover">
+        </div>
+        <div class="font-serif text-[1.1rem] font-semibold text-ink mb-1">${c.name}</div>
+        <p class="text-[.7rem] font-light text-sub leading-relaxed">${c.tagline}</p>
       </div>
       <div class="p-6">
         <div class="h-[3px] bg-line rounded-full mb-2 overflow-hidden"><div class="vote-bar h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#C41E3A,#E8304A)"></div></div>
         <div class="flex justify-between text-[.66rem] text-muted mb-5"><span>${c.votes} suara</span><span>${pct}%</span></div>
-        <button onclick="doVote(${c.id})" class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase transition-all ${isVoted ? 'bg-r text-white border-r' : 'border-rsoft text-r hover:bg-r hover:text-white hover:border-r'}">${isVoted ? '✓ Sudah Dipilih' : 'Pilih Kandidat Ini'}</button>
+        <a href="{{ route('vote') }}" class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase transition-all bg-r text-white border-r hover:bg-r2 hover:border-r2 text-center no-underline block">Vote Sekarang</a>
       </div>`;
     g.appendChild(d);
   });
@@ -489,21 +526,8 @@ function renderVote() {
 }
 
 function doVote(id) {
-  const toast = document.getElementById('toast');
-  if (voted !== null) {
-    const name = cands.find(c => c.id === voted).name;
-    toast.textContent = `Kamu sudah memilih ${name}. Terima kasih atas partisipasimu!`;
-    toast.classList.remove('hidden'); toast.classList.add('flex');
-    setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('flex'); }, 3500);
-    return;
-  }
-  voted = id;
-  cands.forEach(c => { c.votes = c.id === id ? Math.floor(Math.random()*18)+30 : Math.floor(Math.random()*20)+12; });
-  renderVote();
-  const chosen = cands.find(c => c.id === id);
-  toast.textContent = `Suaramu untuk ${chosen.name} berhasil dikirim! Terima kasih.`;
-  toast.classList.remove('hidden');
-  setTimeout(() => toast.classList.add('hidden'), 4000);
+  // Redirect to voting page
+  window.location.href = '{{ route("vote") }}';
 }
 renderVote();
 

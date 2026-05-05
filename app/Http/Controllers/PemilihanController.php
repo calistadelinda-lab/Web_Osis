@@ -2,63 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pemilihan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PemilihanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $candidates = Pemilihan::orderBy('id')->get();
+        return view('voting', ['candidates' => $candidates]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        if (Auth::user()->voting_status == true) {
+            return redirect()->back()->with('error', 'Kamu sudah memberikan suara.');
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $request->validate([
+            'kandidat' => 'required|exists:pemilihans,id',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $pemilihan = Pemilihan::findOrFail($request->kandidat);
+        $pemilihan->increment('Jumlah_Suara');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        Auth::user()->update(['voting_status' => true]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('success', 'Suara kamu berhasil dikirim!');
     }
 }

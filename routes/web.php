@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PemilihanController;
 use App\Http\Controllers\PendaftaranAnggotaController;
 use App\Http\Controllers\PendaftaranKetuaController;
-use App\Models\Pemilihan;
-
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,25 +14,23 @@ Route::get('/pendaftaran-osis', function () {
     return view('formulir');
 })->name('pendaftaran-osis');
 
+Route::post('/pendaftaran-osis/anggota', [PendaftaranAnggotaController::class, 'store'])
+    ->name('pendaftaran-anggota.store');
 
-Route::post('/pendaftaran-osis/anggota', [PendaftaranAnggotaController::class, 'store'])->name('pendaftaran-anggota.store');
-Route::post('/pendaftaran-osis/ketua', [PendaftaranKetuaController::class, 'store'])->name('pendaftaran-ketua.store');
+Route::post('/pendaftaran-osis/ketua', [PendaftaranKetuaController::class, 'store'])
+    ->name('pendaftaran-ketua.store');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/voting', function () {
-    $candidates = Pemilihan::orderBy('id')->get();
-
-    return view('voting', [
-        'candidates' => $candidates,
-    ]);
-})->middleware(['auth'])->name('vote');
-
 Route::middleware('auth')->group(function () {
+    Route::get('/voting', [PemilihanController::class, 'index'])->name('vote');
+    Route::post('/voting', [PemilihanController::class, 'store'])->name('voting.submit');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__.'/auth.php';    
