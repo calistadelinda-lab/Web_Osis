@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pemilihan;
+use App\Models\SettingVoting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,6 +11,12 @@ class PemilihanController extends Controller
 {
     public function index()
     {
+        if (!SettingVoting::isVotingOpen()) {
+            return view('voting-closed', [
+                'message' => SettingVoting::getMessage(),
+            ]);
+        }
+
         $candidates = Pemilihan::orderBy('id')->get();
         return view('voting', ['candidates' => $candidates]);
     }

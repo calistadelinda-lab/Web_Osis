@@ -34,7 +34,7 @@ class PemilihansTable
                     ->imageWidth(60)
                     ->imageHeight(80)
                     ->extraImgAttributes(['loading' => 'lazy']),
-            TextColumn::make('jumlah_suara')
+            TextColumn::make('Jumlah_Suara')
                     ->label('Jumlah Suara')
                     ->sortable(),
             ])

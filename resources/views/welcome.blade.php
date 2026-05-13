@@ -7,7 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
 @php
+use App\Models\SettingVoting;
 use App\Models\Pemilihan;
+
+$settingVoting  = SettingVoting::first();
+$isOpen         = SettingVoting::isVotingOpen();
+$closedRecently = !$isOpen
+    && $settingVoting
+    && $settingVoting->updated_at->diffInHours(now()) < 24;
+$showVoting     = $isOpen || $closedRecently;
 @endphp
 <script>
 tailwind.config = {
@@ -123,7 +131,24 @@ tailwind.config = {
     {{-- <li><a href="#galeri"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Galeri</a></li> --}}
     <li><a href="#voting"    class="px-3.5 py-2 text-[.72rem] font-medium tracking-[.06em] uppercase text-sub no-underline rounded hover:text-r hover:bg-rpale transition-colors">Voting</a></li>
   </ul>
-  <a href="{{ route('pendaftaran-osis') }}" class="px-5 py-2 bg-r text-white no-underline rounded text-[.72rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.28)] hover:bg-r2 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(196,30,58,.35)] transition-all">Daftar Sekarang</a>
+  <div class="flex items-center gap-3">
+    <a href="{{ route('pendaftaran-osis') }}" class="px-5 py-2 bg-r text-white no-underline rounded text-[.72rem] font-semibold tracking-[.1em] uppercase shadow-[0_4px_20px_rgba(196,30,58,.28)] hover:bg-r2 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(196,30,58,.35)] transition-all">Daftar Sekarang</a>
+
+    @auth
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="px-5 py-2 bg-white border border-line text-ink rounded text-[.72rem] font-semibold tracking-[.1em] uppercase hover:bg-rpale hover:border-rsoft hover:text-r transition-all">
+          Logout
+        </button>
+      </form>
+    @else
+      @if($isOpen)
+        <a href="{{ route('login') }}" class="px-5 py-2 bg-white border border-line text-ink no-underline rounded text-[.72rem] font-semibold tracking-[.1em] uppercase hover:bg-rpale hover:border-rsoft hover:text-r transition-all">
+          Voting Sekarang
+        </a>
+      @endif
+    @endauth
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -226,7 +251,6 @@ tailwind.config = {
       </div>
       <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Visi &amp; <em class="italic text-r">Misi</em></h2>
     </div>
-    <!-- VISI MISI CARDS — sejajar dan sama tinggi -->
     <div class="grid grid-cols-2 gap-12 items-stretch reveal">
       <!-- Visi -->
       <div class="bg-ink rounded-2xl p-12 relative overflow-hidden flex flex-col">
@@ -326,66 +350,6 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- GALERI -->
-{{-- <section id="galeri" class="py-28 px-12">
-  <div class="max-w-[1120px] mx-auto">
-    <div class="mb-0 reveal">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-px bg-r"></div>
-        <span class="text-[.62rem] font-semibold tracking-[.2em] uppercase text-r">04 — Momen Kami</span>
-      </div>
-      <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Galeri <em class="italic text-r">Kegiatan</em></h2>
-    </div>
-    <div class="gallery reveal">
-      <div class="gi gi-1 rounded-xl overflow-hidden relative">
-        <div class="gi-bg gi-bg-1 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500" style="transition:transform .5s cubic-bezier(.22,1,.36,1)">
-          <div class="text-[2.5rem] opacity-50">🎉</div>
-          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Pentas Seni 2024</div>
-        </div>
-        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
-          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Pentas Seni Tahunan — Festival Kebudayaan Terbesar</div>
-        </div>
-      </div>
-      <div class="gi gi-2 rounded-xl overflow-hidden relative">
-        <div class="gi-bg gi-bg-2 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
-          <div class="text-[2.5rem] opacity-50">🏕️</div>
-          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Leadership Camp</div>
-        </div>
-        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
-          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Leadership Camp 2024</div>
-        </div>
-      </div>
-      <div class="gi gi-3 rounded-xl overflow-hidden relative">
-        <div class="gi-bg gi-bg-3 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
-          <div class="text-[2.5rem] opacity-50">⚽</div>
-          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">OSIS Cup 2024</div>
-        </div>
-        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
-          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Turnamen Olahraga Antar Kelas</div>
-        </div>
-      </div>
-      <div class="gi gi-4 rounded-xl overflow-hidden relative">
-        <div class="gi-bg gi-bg-4 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
-          <div class="text-[2.5rem] opacity-50">🎓</div>
-          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Pelantikan Pengurus</div>
-        </div>
-        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
-          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Pelantikan Pengurus OSIS 2024</div>
-        </div>
-      </div>
-      <div class="gi gi-5 rounded-xl overflow-hidden relative">
-        <div class="gi-bg gi-bg-5 w-full h-full flex flex-col items-center justify-center gap-3 transition-transform duration-500">
-          <div class="text-[2.5rem] opacity-50">🌱</div>
-          <div class="text-[.68rem] font-semibold tracking-[.08em] text-r2 uppercase">Go Green Action</div>
-        </div>
-        <div class="gi-overlay absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-5" style="background:linear-gradient(to top,rgba(154,21,48,.82) 0%,rgba(154,21,48,.1) 55%,transparent 100%)">
-          <div class="text-[.75rem] font-medium tracking-[.04em] text-white leading-snug">Aksi Peduli Lingkungan Hijau</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section> --}}
-
 <!-- VOTING -->
 <section id="voting" class="py-28 px-12 bg-warm">
   <div class="max-w-[1120px] mx-auto">
@@ -398,45 +362,75 @@ tailwind.config = {
         <h2 class="font-serif text-ink leading-[1.05] tracking-[-0.02em]" style="font-size:clamp(2.4rem,4vw,3.6rem)">Vote <em class="italic text-r">Ketua &amp; Wakil OSIS</em></h2>
         <p class="mt-3 text-[.88rem] font-light text-sub leading-[1.8] max-w-[520px]">Satu siswa, satu suara. Berikan pilihan terbaikmu untuk Ketua & Wakil OSIS periode 2026/2027.</p>
       </div>
-      <div class="py-2 px-4 bg-rpale border border-rsoft rounded text-[.68rem] font-semibold text-r tracking-[.06em] whitespace-nowrap">⏱ Voting Ditutup</div>
-    </div>
-
-    @php
-        $candidates = Pemilihan::orderBy('Jumlah_Suara', 'desc')->get();
-        $winner = $candidates->first();
-        $totalVotes = $candidates->sum('Jumlah_Suara');
-    @endphp
-
-    {{-- PEMENANG SEMENTARA --}}
-    @if($winner)
-    <div class="bg-gradient-to-r from-r to-r2 rounded-2xl p-8 mb-8 text-white text-center reveal">
-      <div class="text-[.62rem] font-semibold tracking-[.2em] uppercase opacity-75 mb-2">🏆 PEMENANG SEMENTARA</div>
-      <div class="font-serif text-[2rem] font-bold mb-2">{{ $winner->Nama_Ketua }} & {{ $winner->Nama_Wakil }}</div>
-      <div class="text-[.88rem] opacity-90 mb-4">{{ $winner->Jumlah_Suara }} suara ({{ $totalVotes > 0 ? round(($winner->Jumlah_Suara / $totalVotes) * 100) : 0 }}%)</div>
-      <div class="flex justify-center gap-4">
-        <img src="{{ $winner->Foto_Ketua ? asset('storage/' . $winner->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Ketua }}" class="w-16 h-16 rounded-full border-2 border-white/30">
-        <img src="{{ $winner->Foto_Wakil ? asset('storage/' . $winner->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Wakil }}" class="w-16 h-16 rounded-full border-2 border-white/30">
+      <div class="py-2 px-4 bg-rpale border border-rsoft rounded text-[.68rem] font-semibold text-r tracking-[.06em] whitespace-nowrap">
+        @if($isOpen)
+          ⏱ Voting Aktif
+        @elseif($closedRecently)
+          ⏱ Voting Ditutup · Hasil Sementara
+        @else
+          ⏱ Voting Ditutup
+        @endif
       </div>
     </div>
+
+    @if($showVoting)
+      @php
+          $candidates  = Pemilihan::orderBy('Jumlah_Suara', 'desc')->get();
+          $winner      = $candidates->first();
+          $totalVotes  = $candidates->sum('Jumlah_Suara');
+          $isLoggedIn  = Auth::check();
+      @endphp
+
+      {{-- PEMENANG SEMENTARA --}}
+      @if($winner)
+      <div class="bg-gradient-to-r from-r to-r2 rounded-2xl p-8 mb-8 text-white text-center reveal">
+        <div class="text-[.62rem] font-semibold tracking-[.2em] uppercase opacity-75 mb-2">
+          {{ $isOpen ? '🏆 PEMENANG SEMENTARA' : '🏆 PEMENANG AKHIR' }}
+        </div>
+        <div class="font-serif text-[2rem] font-bold mb-2">{{ $winner->Nama_Ketua }} & {{ $winner->Nama_Wakil }}</div>
+        <div class="text-[.88rem] opacity-90 mb-4">{{ $winner->Jumlah_Suara }} suara ({{ $totalVotes > 0 ? round(($winner->Jumlah_Suara / $totalVotes) * 100) : 0 }}%)</div>
+        <div class="flex justify-center gap-4">
+          <img src="{{ $winner->Foto_Ketua ? asset('storage/' . $winner->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Ketua }}" class="w-16 h-16 rounded-full border-2 border-white/30">
+          <img src="{{ $winner->Foto_Wakil ? asset('storage/' . $winner->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($winner->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true' }}" alt="{{ $winner->Nama_Wakil }}" class="w-16 h-16 rounded-full border-2 border-white/30">
+        </div>
+      </div>
+      @endif
+
+      @php
+          $gridLayoutClass = $candidates->count() <= 2
+              ? 'grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-4xl mx-auto'
+              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5';
+      @endphp
+      <div class="{{ $gridLayoutClass }} reveal" id="cGrid"></div>
+
+      <div class="flex items-center justify-between mt-10 px-8 py-6 bg-warm rounded-xl border border-line flex-wrap gap-4 reveal">
+        <div>
+          <div class="text-[.62rem] font-semibold tracking-[.16em] uppercase text-muted mb-1">Total Suara Masuk</div>
+          <div class="font-serif text-[2.5rem] font-semibold text-r leading-none" id="vTotal">{{ $totalVotes }}</div>
+        </div>
+        <div class="text-[.72rem] font-light text-muted text-right leading-relaxed">
+          @if($isOpen)
+            Data diperbarui secara real-time<br>setiap suara masuk
+          @else
+            Voting telah ditutup<br>Hasil final akan diumumkan segera
+          @endif
+        </div>
+      </div>
+
+    @else
+      {{-- Tampil hanya setelah 24 jam sejak voting ditutup --}}
+      <div class="bg-white rounded-2xl p-12 text-center reveal">
+        <div class="w-16 h-16 bg-rpale rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-r" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-xl text-ink mb-4">Voting Belum Dibuka</h3>
+        <p class="text-sub text-sm leading-relaxed">{{ SettingVoting::getMessage() }}</p>
+      </div>
     @endif
-
-    @php
-        $gridLayoutClass = $candidates->count() <= 2
-            ? 'grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-4xl mx-auto'
-            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5';
-    @endphp
-    <div class="{{ $gridLayoutClass }} reveal" id="cGrid"></div>
-
-    <div class="flex items-center justify-between mt-10 px-8 py-6 bg-warm rounded-xl border border-line flex-wrap gap-4 reveal">
-      <div>
-        <div class="text-[.62rem] font-semibold tracking-[.16em] uppercase text-muted mb-1">Total Suara Masuk</div>
-        <div class="font-serif text-[2.5rem] font-semibold text-r leading-none" id="vTotal">{{ $totalVotes }}</div>
-      </div>
-      <div class="text-[.72rem] font-light text-muted text-right leading-relaxed">Data diperbarui secara real-time<br>setiap suara masuk</div>
-    </div>
   </div>
 </section>
-
 
 <!-- FOOTER -->
 <footer class="bg-ink px-12 py-12 flex items-center justify-between flex-wrap gap-6">
@@ -480,31 +474,49 @@ const ro = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
-// voting
+// voting render (hanya jika showVoting = true)
+@if($showVoting)
 @php
     $candsData = $candidates->map(function ($candidate, $index) {
         return [
-            'id' => $candidate->id,
-            'name' => $candidate->Nama_Ketua . ' & ' . $candidate->Nama_Wakil,
-            'num' => str_pad($index + 1, 2, '0', STR_PAD_LEFT),
-            'tagline' => $candidate->Visi . ' — ' . $candidate->Misi,
-            'foto_ketua' => $candidate->Foto_Ketua ? asset('storage/' . $candidate->Foto_Ketua) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
-            'foto_wakil' => $candidate->Foto_Wakil ? asset('storage/' . $candidate->Foto_Wakil) : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
-            'votes' => $candidate->Jumlah_Suara,
+            'id'         => $candidate->id,
+            'name'       => $candidate->Nama_Ketua . ' & ' . $candidate->Nama_Wakil,
+            'num'        => str_pad($index + 1, 2, '0', STR_PAD_LEFT),
+            'tagline'    => $candidate->Visi . ' — ' . $candidate->Misi,
+            'foto_ketua' => $candidate->Foto_Ketua
+                                ? asset('storage/' . $candidate->Foto_Ketua)
+                                : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Ketua) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
+            'foto_wakil' => $candidate->Foto_Wakil
+                                ? asset('storage/' . $candidate->Foto_Wakil)
+                                : 'https://ui-avatars.com/api/?name=' . urlencode($candidate->Nama_Wakil) . '&background=fde8e8&color=c10e0e&size=60&font-size=0.35&bold=true',
+            'votes'      => $candidate->Jumlah_Suara,
         ];
     })->toArray();
 @endphp
-const cands = @json($candsData);
-let voted = null;
+const cands      = @json($candsData);
+const isOpen     = {{ $isOpen ? 'true' : 'false' }};
+const isLoggedIn = {{ $isLoggedIn ? 'true' : 'false' }};
+const voteUrl    = isLoggedIn ? '{{ route("vote") }}' : '{{ route("login") }}';
 
 function renderVote() {
   const g = document.getElementById('cGrid');
+  if (!g) return;
   g.innerHTML = '';
   const tot = cands.reduce((a,c) => a+c.votes, 0);
   cands.forEach(c => {
     const pct = tot > 0 ? Math.round(c.votes/tot*100) : 0;
     const d = document.createElement('div');
     d.className = `border rounded-2xl overflow-hidden bg-white transition-all duration-300 relative border-line hover:border-rsoft hover:shadow-[0_8px_40px_rgba(196,30,58,.1)] hover:-translate-y-1`;
+
+    // Tombol vote hanya muncul kalau voting masih aktif
+    const voteBtn = isOpen
+      ? `<a href="${voteUrl}" class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase transition-all bg-r text-white border-r hover:bg-r2 hover:border-r2 text-center no-underline block">
+           ${isLoggedIn ? 'Vote Sekarang' : 'Mulai Voting'}
+         </a>`
+      : `<div class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase text-center bg-rpale text-r border-rsoft">
+           Voting Ditutup
+         </div>`;
+
     d.innerHTML = `
       <div class="bg-rpale px-6 pt-10 pb-6 text-center relative">
         <div class="absolute top-4 left-4 w-7 h-7 rounded-full bg-r text-white flex items-center justify-center text-[.62rem] font-bold">${c.num}</div>
@@ -518,18 +530,15 @@ function renderVote() {
       <div class="p-6">
         <div class="h-[3px] bg-line rounded-full mb-2 overflow-hidden"><div class="vote-bar h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#C41E3A,#E8304A)"></div></div>
         <div class="flex justify-between text-[.66rem] text-muted mb-5"><span>${c.votes} suara</span><span>${pct}%</span></div>
-        <a href="{{ route('vote') }}" class="w-full py-2.5 rounded-lg border-[1.5px] font-sans text-[.72rem] font-semibold tracking-[.08em] uppercase transition-all bg-r text-white border-r hover:bg-r2 hover:border-r2 text-center no-underline block">Vote Sekarang</a>
+        ${voteBtn}
       </div>`;
     g.appendChild(d);
   });
   document.getElementById('vTotal').textContent = tot.toLocaleString('id-ID');
 }
 
-function doVote(id) {
-  // Redirect to voting page
-  window.location.href = '{{ route("vote") }}';
-}
 renderVote();
+@endif
 
 // forms
 function toggleForm(t) {

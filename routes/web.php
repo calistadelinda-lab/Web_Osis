@@ -5,6 +5,7 @@ use App\Http\Controllers\PemilihanController;
 use App\Http\Controllers\PendaftaranAnggotaController;
 use App\Http\Controllers\PendaftaranKetuaController;
 use Illuminate\Support\Facades\Route;
+use App\Models\SettingVoting;
 
 Route::get('/', function () {
     return view('welcome');
