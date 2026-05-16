@@ -174,7 +174,7 @@ php artisan migrate:fresh
 
 ---
 
-## 🌱 Seeder
+##  Seeder
 
 Seeder digunakan untuk mengisi data awal ke database.
 
@@ -184,18 +184,7 @@ Seeder digunakan untuk mengisi data awal ke database.
 php artisan db:seed
 ```
 
-### Jalankan Seeder Tertentu
 
-```bash
-# Isi data setting voting (buka/tutup)
-php artisan db:seed --class=SettingVotingSeeder
-
-# Isi data kandidat pemilihan
-php artisan db:seed --class=PemilihanSeeder
-
-# Isi data user admin
-php artisan db:seed --class=UserSeeder
-```
 
 ### Migrasi + Seeder Sekaligus ✅ (Direkomendasikan untuk setup awal)
 
