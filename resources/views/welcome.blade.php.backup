@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OSIS SMK Negeri 5 Telkom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+@php
+use App\Models\SettingVoting;
+use App\Models\Pemilihan;
+
+$settingVoting  = SettingVoting::first();
+$isOpen         = SettingVoting::isVotingOpen();
+$closedRecently = !$isOpen
+    && $settingVoting
+    && $settingVoting->updated_at->diffInHours(now()) < 24;
+$showVoting     = $isOpen || $closedRecently;
+@endphp
+
+{{-- Local Tailwind build --}}
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{red:'#C41230',red2:'#A00E27',ink:'#0A0908',g1:'#1A1918',g2:'#2C2A28',g3:'#5C5A58',g4:'#9C9A98',g5:'#D8D6D4',g6:'#EFEFED',bg:'#F5F4F2',w:'#FAFAF8'},fontFamily:{serif:['"Instrument Serif"','serif'],sans:['Syne','sans-serif']}}}}
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Syne',sans-serif;background:#F5F4F2;color:#0A0908;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+*,a,button{cursor:none !important;}
+
+/* ─ Cursor ─ */
+#cd{position:fixed;top:0;left:0;width:6px;height:6px;background:#C41230;border-radius:50%;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);}
+#cr{position:fixed;top:0;left:0;width:26px;height:26px;border:1.5px solid rgba(196,18,48,.45);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .35s cubic-bezier(.22,1,.36,1),height .35s cubic-bezier(.22,1,.36,1),border-color .25s,background .25s;}
+#cr.big{width:46px;height:46px;border-color:rgba(196,18,48,.2);background:rgba(196,18,48,.04);}
+
+/* ─ Intro Loading ─ */
+#intro{position:fixed;inset:0;z-index:9500;background:#080605;display:flex;align-items:center;justify-content:center;overflow:hidden;backdrop-filter:blur(40px);}
+#intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 50% 40%,rgba(196,18,48,.2) 0%,transparent 60%);}
+#intro::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 0%,rgba(8,6,5,.3) 100%);pointer-events:none;}
+#iglow{position:absolute;width:100%;height:100%;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(196,18,48,.12) 0%,transparent 70%);animation:gp 4s ease-in-out infinite;}
+@keyframes gp{0%{opacity:.5;transform:scale(.95)}50%{opacity:1;transform:scale(1.08)}100%{opacity:.5;transform:scale(.95)}}
+#iin{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;opacity:0;filter:blur(18px);transform:scale(.92) translateY(12px);transition:opacity 1.2s cubic-bezier(.22,1,.36,1),filter 1.2s cubic-bezier(.22,1,.36,1),transform 1.2s cubic-bezier(.22,1,.36,1);}
+#iin.show{opacity:1;filter:blur(0);transform:none;}
+#intro-slogan{width:min(580px,86vw);display:block;filter:drop-shadow(0 0 50px rgba(196,18,48,.3));animation:pulseSlogan 2s cubic-bezier(.22,1,.36,1) 1s forwards;}
+@keyframes pulseSlogan{0%{opacity:.4;filter:drop-shadow(0 0 40px rgba(196,18,48,.1)) blur(2px)}100%{opacity:1;filter:drop-shadow(0 0 50px rgba(196,18,48,.3)) blur(0)}}
+#ibar{width:0;height:1px;background:rgba(196,18,48,.75);margin:2.25rem auto 0;transition:width 1.1s .4s cubic-bezier(.22,1,.36,1);}
+#ibar.grow{width:72px;}
+#isub{margin-top:1.5rem;font-size:.58rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.15);}
+#intro.out{animation:outSlide .95s cubic-bezier(.76,0,.24,1) forwards;}
+@keyframes outSlide{to{opacity:0;transform:translateY(-120%);filter:blur(10px)}}
+
+/* ─ Navbar ─ */
+#nav{position:fixed;top:0;left:0;right:0;z-index:800;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 4rem;background:rgba(245,244,242,.72);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border-bottom:1px solid rgba(196,18,48,.06);transition:all .3s cubic-bezier(.22,1,.36,1);}
+#nav.scrolled{background:rgba(245,244,242,.95);box-shadow:0 2px 32px rgba(10,9,8,.06);border-bottom:1px solid rgba(196,18,48,.08);}
+.nl{position:relative;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#5C5A58;text-decoration:none;padding:.4rem .75rem;transition:color .25s cubic-bezier(.22,1,.36,1);}
+.nl::after{content:'';position:absolute;bottom:-2px;left:.75rem;right:.75rem;height:2px;background:#C41230;transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.22,1,.36,1);}
+.nl:hover{color:#C41230;}.nl:hover::after{transform:scaleX(1);}
+.btn-r{padding:.55rem 1.5rem;background:#C41230;color:#fff;text-decoration:none;border-radius:8px;font-size:.65rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;box-shadow:0 6px 20px rgba(196,18,48,.25);transition:all .3s cubic-bezier(.22,1,.36,1);display:inline-block;border:none;cursor:pointer;}
+.btn-r:hover{background:#A00E27;box-shadow:0 10px 32px rgba(196,18,48,.4);transform:translateY(-2px);}
+.btn-o{padding:.55rem 1.25rem;background:transparent;border:1.5px solid rgba(196,18,48,.4);color:#5C5A58;text-decoration:none;border-radius:8px;font-size:.65rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;transition:all .3s cubic-bezier(.22,1,.36,1);display:inline-block;cursor:pointer;}
+.btn-o:hover{border-color:#C41230;color:#C41230;background:rgba(196,18,48,.03);}
+
+/* ─ Hero ─ */
+#beranda{padding-top:70px;min-height:100svh;background:#F5F4F2;overflow:hidden;position:relative;}
+#beranda::before{content:'';position:absolute;top:50%;left:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(196,18,48,.04) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.hero-grid{max-width:1360px;margin:0 auto;padding:0 4rem;display:grid;grid-template-columns:1.1fr 1fr;min-height:calc(100svh - 70px);align-items:center;gap:5rem;position:relative;z-index:1;}
+.hero-left{padding:4.5rem 0;}
+.hero-right{height:min(85vh,750px);position:relative;margin-right:-2rem;}
+.hero-img-box{position:absolute;inset:0;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(10,9,8,.15);}
+.hero-img-box img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.hero-img-box::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(196,18,48,.08) 0%,rgba(196,18,48,.02) 50%,transparent 100%);pointer-events:none;}
+.hero-img-box::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(10,9,8,.4) 0%,rgba(10,9,8,.1) 40%,transparent 70%);pointer-events:none;}
+
+/* ─ Animations ─ */
+@keyframes hs{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes hl{from{width:0}to{width:56px}}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes sway{0%,100%{transform:translateY(0px)}50%{transform:translateY(3px)}}
+.a0{animation:hs .9s .1s cubic-bezier(.22,1,.36,1) both}
+.a1{animation:hs .9s .25s cubic-bezier(.22,1,.36,1) both}
+.a2{animation:hs .9s .4s cubic-bezier(.22,1,.36,1) both}
+.a3{animation:hs .9s .55s cubic-bezier(.22,1,.36,1) both}
+.a4{animation:hs .9s .7s cubic-bezier(.22,1,.36,1) both}
+.al{animation:hl .8s .35s cubic-bezier(.22,1,.36,1) both}
+.asw{animation:sway 3s ease-in-out infinite;}
+
+/* ─ Ticker ─ */
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tkt{animation:tk 36s linear infinite;display:flex;white-space:nowrap;}
+
+/* ─ Reveal ─ */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1);}
+.rv.in{opacity:1;transform:none;}
+
+/* ─ Profile Cell ─ */
+.pc{position:relative;overflow:hidden;padding:3rem 2.25rem;background:#FAFAF8;transition:all .35s cubic-bezier(.22,1,.36,1);}
+.pc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:#C41230;transform:scaleY(0);transform-origin:bottom;transition:transform .45s cubic-bezier(.22,1,.36,1);}
+.pc:hover{background:#FFF5F6;transform:translateY(-3px);}.pc:hover::before{transform:scaleY(1);}
+
+/* ─ Org Node ─ */
+.on{position:relative;overflow:hidden;background:#FAFAF8;border:1px solid #E8E6E4;border-radius:12px;padding:1.5rem 1.75rem;text-align:center;transition:all .35s cubic-bezier(.22,1,.36,1);}
+.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:#C41230;transform:scaleX(0);transition:transform .4s cubic-bezier(.22,1,.36,1);}
+.on:hover{background:#FFF5F6;border-color:rgba(196,18,48,.25);transform:translateY(-4px);box-shadow:0 8px 32px rgba(196,18,48,.08);}.on:hover::after{transform:scaleX(1);}
+
+/* ─ Candidate Card ─ */
+.cc{background:#FAFAF8;border:1px solid #E8E6E4;border-radius:14px;overflow:hidden;transition:all .4s cubic-bezier(.22,1,.36,1);}
+.cc:hover{border-color:rgba(196,18,48,.2);box-shadow:0 16px 56px rgba(196,18,48,.12);transform:translateY(-6px);}
+.vbar{transition:width 1.2s cubic-bezier(.22,1,.36,1);}
+
+/* ─ Eyebrow ─ */
+.ey{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
+.ey-d{width:7px;height:7px;background:#C41230;border-radius:50%;flex-shrink:0;}
+.ey-l{font-size:.58rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#C41230;}
+
+/* ─ Footer ─ */
+footer{background:#080605;border-top:1px solid rgba(255,255,255,.04);}
+.footer-content{max-width:1360px;margin:0 auto;padding:5rem 4rem 3rem;}
+.footer-grid{display:grid;grid-template-columns:1fr 2fr 1fr;gap:3rem;margin-bottom:3rem;}
+.footer-col-left{border-right:1px solid rgba(255,255,255,.08);padding-right:3rem;}
+.footer-divider{height:1px;background:rgba(255,255,255,.06);margin:2rem 0;}
+.footer-col-mid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.footer-links{display:flex;flex-direction:column;gap:.75rem;}
+.footer-link{font-size:.65rem;color:rgba(255,255,255,.35);text-decoration:none;letter-spacing:.05em;transition:all .3s cubic-bezier(.22,1,.36,1);}
+.footer-link:hover{color:#C41230;}
+.footer-col-social{display:flex;flex-direction:column;gap:1.25rem;}
+.footer-socials{display:flex;gap:1rem}
+.social-btn{width:40px;height:40px;border:1.5px solid rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);font-size:.65rem;font-weight:700;letter-spacing:.08em;text-decoration:none;transition:all .3s cubic-bezier(.22,1,.36,1);}
+.social-btn:hover{border-color:#C41230;color:#C41230;background:rgba(196,18,48,.05);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.06);}
+.footer-copy{font-size:.58rem;color:rgba(255,255,255,.15);letter-spacing:.04em;}
+.footer-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:rgba(196,18,48,.08);border:1px solid rgba(196,18,48,.15);border-radius:100px;font-size:.58rem;font-weight:600;color:#C41230;}
+
+/* ─ Responsive ─ */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;gap:2rem;padding:0 2.5rem;}
+  .hero-right{display:none;}
+  #nav{padding:0 2rem;}
+  .footer-grid{grid-template-columns:1fr;gap:2rem;}
+  .footer-col-left{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);padding:0 0 2rem 0;}
+}
+@media(max-width:768px){
+  #nav{height:64px;padding:0 1.25rem;}
+  #beranda{padding-top:64px;}
+  #beranda::before{width:400px;height:400px;left:-40%;}
+  .hero-grid{min-height:calc(100svh - 64px);}
+  .hero-left{padding:3rem 0;}
+  #nav ul.hidden{display:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div id="cd"></div>
+<div id="cr"></div>
+
+<!-- ══════ INTRO LOADING ══════ -->
+<div id="intro" aria-hidden="true">
+  <div id="iglow"></div>
+  <div id="iin">
+    <img id="intro-slogan" src="/slogan.png" alt="OSIS SMK 5 Telkom"/>
+    <div id="ibar"></div>
+    <div id="isub">SMK Negeri 5 Telkom &nbsp;&middot;&nbsp; Banda Aceh</div>
+  </div>
+</div>
+
+<!-- ══════ NAVBAR ══════ -->
+<nav id="nav">
+  <a href="#beranda" style="display:flex;align-items:center;gap:1rem;text-decoration:none;transition:all .3s cubic-bezier(.22,1,.36,1)">
+    <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#C41230 0%,#A00E27 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 20px rgba(196,18,48,.3)">
+      <span style="font-family:'Instrument Serif',serif;font-size:1.1rem;color:white;line-height:1;font-weight:600">O</span>
+    </div>
+    <div>
+      <div style="font-size:.75rem;font-weight:700;color:#0A0908;letter-spacing:.01em;line-height:1.1">OSIS</div>
+      <div style="font-size:.55rem;font-weight:600;color:#9C9A98;letter-spacing:.12em;text-transform:uppercase;line-height:1">SMK Negeri 5</div>
+    </div>
+  </a>
+
+  <ul style="display:flex;align-items:center;gap:.5rem;list-style:none;margin:0;padding:0;" class="hidden md:flex">
+    <li><a href="#profil"    class="nl">Profil</a></li>
+    <li><a href="#visi-misi" class="nl">Visi Misi</a></li>
+    <li><a href="#struktur"  class="nl">Struktur</a></li>
+    <li><a href="#voting"    class="nl">Voting</a></li>
+  </ul>
+
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <a href="{{ route('pendaftaran-osis') }}" class="btn-r">Daftar Sekarang</a>
+    @auth
+      <form method="POST" action="{{ route('logout') }}" style="margin:0;display:inline">
+        @csrf
+        <button type="submit" class="btn-o" style="font-family:'Syne',sans-serif">Logout</button>
+      </form>
+    @else
+      @if($isOpen)
+        <a href="{{ route('login') }}" class="btn-o">Vote</a>
+      @endif
+    @endauth
+  </div>
+</nav>
+
+<!-- ══════ HERO ══════ -->
+<section id="beranda">
+  <div class="hero-grid">
+
+    <!-- LEFT -->
+    <div class="hero-left">
+      <!-- Pill -->
+      <div class="a0" style="display:inline-flex;align-items:center;gap:.625rem;padding:.375rem .875rem .375rem .5rem;background:#fff;border:1.5px solid #E8E6E4;border-radius:100px;margin-bottom:2.25rem">
+        <div style="width:16px;height:16px;background:#C41230;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="width:5px;height:5px;background:white;border-radius:50%;animation:bk 2.2s ease infinite"></div>
+        </div>
+        <span style="font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#C41230">Periode 2026 — 2027</span>
+      </div>
+
+      <!-- H1 -->
+      <h1 class="a1" style="font-family:'Instrument Serif',serif;font-size:clamp(4rem,6.8vw,7.5rem);line-height:.92;letter-spacing:-.03em;color:#0A0908;margin:0">
+        Suara<br>Siswa,<br><em>Aksi <span style="color:#C41230">Nyata</span></em>
+      </h1>
+
+      <div class="al" style="height:1.5px;background:#C41230;margin:2.25rem 0;width:48px"></div>
+
+      <p class="a2" style="font-size:.88rem;font-weight:400;color:#5C5A58;line-height:1.9;max-width:420px;margin:0">
+        OSIS SMK Negeri 5 Telkom — ruang tumbuh para pemimpin muda yang berani berpikir, bergerak, dan berkolaborasi untuk sekolah yang lebih baik.
+      </p>
+
+      <div class="a3" style="display:flex;align-items:center;gap:1.75rem;margin-top:2.5rem">
+        <a href="#voting" style="display:inline-flex;align-items:center;gap:.5rem;padding:.875rem 2rem;background:#0A0908;color:white;text-decoration:none;border-radius:8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:all .25s" onmouseover="this.style.background='#C41230';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#0A0908';this.style.transform=''">
+          Vote Ketua OSIS
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#profil" style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#9C9A98;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#0A0908'" onmouseout="this.style.color='#9C9A98'">Kenali Kami &nbsp;&#8599;</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="a4" style="display:flex;gap:0;margin-top:3.5rem;border-top:1px solid #E8E6E4;padding-top:2rem">
+        <div style="padding-right:2rem;border-right:1px solid #E8E6E4">
+          <div style="font-family:'Instrument Serif',serif;font-size:2.8rem;line-height:1;color:#0A0908">50<span style="color:#C41230">+</span></div>
+          <div style="font-size:.55rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-top:.375rem">Anggota Aktif</div>
+        </div>
+        <div style="padding:0 2rem;border-right:1px solid #E8E6E4">
+          <div style="font-family:'Instrument Serif',serif;font-size:2.8rem;line-height:1;color:#0A0908">10<span style="color:#C41230">+</span></div>
+          <div style="font-size:.55rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-top:.375rem">Program Kerja</div>
+        </div>
+        <div style="padding-left:2rem">
+          <div style="font-family:'Instrument Serif',serif;font-size:1.15rem;line-height:1.3;color:#0A0908;font-style:italic">10–12 Feb<br>2026</div>
+          <div style="font-size:.55rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-top:.375rem">Batas Voting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="hero-right a1">
+      <div class="hero-img-box">
+        <img src="/osis.jpeg" alt="OSIS SMK 5 Telkom"/>
+        <!-- Floating caption -->
+        <div style="position:absolute;bottom:1.75rem;left:1.5rem;right:1.5rem;z-index:2;display:flex;align-items:flex-end;justify-content:space-between">
+          <div style="background:rgba(245,244,242,.93);backdrop-filter:blur(14px);border:1px solid rgba(232,230,228,.6);border-radius:9px;padding:.875rem 1.125rem">
+            <div style="font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#9C9A98;margin-bottom:.2rem">Kepengurusan Aktif</div>
+            <div style="font-size:.8rem;font-weight:700;color:#0A0908">Periode 2026 / 2027</div>
+          </div>
+          <div style="width:36px;height:36px;background:#C41230;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════ TICKER MARQUEE ══════ -->
+<div style="background:#0A0908;overflow:hidden;padding:1rem 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)">
+  <div class="tkt" id="tk"></div>
+</div>
+
+<!-- ══════ PROFIL ══════ -->
+<section id="profil" style="padding:7rem 3rem;background:#F5F4F2" class="sp">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="rv" style="margin-bottom:4.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap">
+      <div>
+        <div class="ey"><div class="ey-d"></div><span class="ey-l">01 — Tentang Kami</span></div>
+        <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,4vw,3.75rem);line-height:1;letter-spacing:-.02em;color:#0A0908;margin:0">Profil <em style="color:#C41230">OSIS</em></h2>
+      </div>
+      <p style="font-size:.82rem;font-weight:400;color:#5C5A58;line-height:1.85;max-width:340px;margin:0">Wadah aspirasi dan kepemimpinan siswa SMK Negeri 5 Telkom Banda Aceh.</p>
+    </div>
+    <div class="rv" style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#E8E6E4">
+      <div class="pc">
+        <div style="font-family:'Instrument Serif',serif;font-size:2.75rem;color:rgba(196,18,48,.07);line-height:1;margin-bottom:.875rem">01</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0A0908;margin-bottom:.625rem">Siapa Kami</div>
+        <p style="font-size:.83rem;color:#5C5A58;line-height:1.85;margin:0">OSIS SMK Negeri 5 Telkom adalah wadah aspirasi, kreativitas, dan kepemimpinan siswa — menjembatani antara siswa dan sekolah dalam menciptakan lingkungan belajar yang dinamis.</p>
+      </div>
+      <div class="pc">
+        <div style="font-family:'Instrument Serif',serif;font-size:2.75rem;color:rgba(196,18,48,.07);line-height:1;margin-bottom:.875rem">02</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0A0908;margin-bottom:.625rem">Apa yang Kami Lakukan</div>
+        <p style="font-size:.83rem;color:#5C5A58;line-height:1.85;margin:0">Mengelola ekstrakurikuler, mengadakan event sekolah, menyuarakan aspirasi siswa — OSIS adalah pusat pergerakan positif di lingkungan SMK Negeri 5 Telkom.</p>
+      </div>
+      <div class="pc">
+        <div style="font-family:'Instrument Serif',serif;font-size:2.75rem;color:rgba(196,18,48,.07);line-height:1;margin-bottom:.875rem">03</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0A0908;margin-bottom:.625rem">Perjalanan Kami</div>
+        <p style="font-size:.83rem;color:#5C5A58;line-height:1.85;margin:0">Perjalanan OSIS SMK Negeri 5 Telkom dimulai dari semangat kebersamaan untuk menciptakan lingkungan sekolah yang aktif, kreatif, dan inspiratif.</p>
+      </div>
+      <div class="pc">
+        <div style="font-family:'Instrument Serif',serif;font-size:2.75rem;color:rgba(196,18,48,.07);line-height:1;margin-bottom:.875rem">04</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0A0908;margin-bottom:.625rem">Nilai Kami</div>
+        <p style="font-size:.83rem;color:#5C5A58;line-height:1.85;margin:0">Integritas &middot; Kolaborasi &middot; Inovasi &middot; Inklusivitas. Setiap suara siswa berharga dan berhak untuk didengar serta diperjuangkan bersama.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ VISI MISI ══════ -->
+<section id="visi-misi" style="padding:7rem 3rem;background:#0A0908" class="sp">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="rv" style="margin-bottom:4.5rem">
+      <div class="ey"><div class="ey-d"></div><span class="ey-l">02 — Arah &amp; Tujuan</span></div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,4vw,3.75rem);line-height:1;letter-spacing:-.02em;color:#FAFAF8;margin:0">Visi &amp; <em style="color:#C41230">Misi</em></h2>
+    </div>
+    <div class="rv" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+      <div style="border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:3rem;background:#111110;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-70px;right:-70px;width:220px;height:220px;background:radial-gradient(circle,rgba(196,18,48,.14) 0%,transparent 70%);border-radius:50%;pointer-events:none"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#C41230;margin-bottom:1.75rem;display:flex;align-items:center;gap:.75rem">Visi<div style="flex:1;height:1px;background:rgba(255,255,255,.07)"></div></div>
+        <p style="font-family:'Instrument Serif',serif;font-size:1.3rem;font-style:italic;color:rgba(255,255,255,.85);line-height:1.75;margin:0">"Menjadi dewan perwakilan yang menjunjung tinggi nilai-nilai prestasi akademik dan non akademik, serta mendengar aspirasi siswa dengan sebenar benarnya"</p>
+      </div>
+      <div style="border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:3rem;background:#111110;position:relative;overflow:hidden">
+        <div style="position:absolute;bottom:-70px;left:-70px;width:220px;height:220px;background:radial-gradient(circle,rgba(196,18,48,.1) 0%,transparent 70%);border-radius:50%;pointer-events:none"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#C41230;margin-bottom:1.75rem;display:flex;align-items:center;gap:.75rem">Misi<div style="flex:1;height:1px;background:rgba(255,255,255,.07)"></div></div>
+        <p style="font-family:'Instrument Serif',serif;font-size:1.3rem;font-style:italic;color:rgba(255,255,255,.85);line-height:1.75;margin:0">"Mendorong pertumbuhan prestasi siswa di dalam maupun di luar lingkungan sekolah dan menyambut dengan hangat kritikan dari seluruh warga SMK N 5 Telkom Banda Aceh"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STRUKTUR ══════ -->
+<section id="struktur" style="padding:7rem 3rem;background:#F5F4F2" class="sp">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="rv" style="margin-bottom:4.5rem">
+      <div class="ey"><div class="ey-d"></div><span class="ey-l">03 — Tim Kami</span></div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,4vw,3.75rem);line-height:1;letter-spacing:-.02em;color:#0A0908;margin:0">Struktur <em style="color:#C41230">Organisasi</em></h2>
+    </div>
+    <div class="rv" style="display:flex;flex-direction:column;align-items:center">
+      <div style="display:flex;justify-content:center">
+        <div style="min-width:230px;background:#C41230;border-radius:10px;padding:1.5rem 2rem;text-align:center;box-shadow:0 8px 32px rgba(196,18,48,.28)">
+          <div style="font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.375rem">Ketua OSIS</div>
+          <div style="font-size:.85rem;font-weight:700;color:white">M. Akbar Maulana Mufa</div>
+        </div>
+      </div>
+      <div style="width:1px;height:24px;background:#D8D6D4"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        @foreach([['Wakil Ketua I','Muhammad Fairuz'],['Sekretaris I','Qurrata\'aini'],['Sekretaris II','Putri Raisha'],['Bendahara I','Hizri Uswa']] as [$pos,$name])
+        <div class="on" style="min-width:158px">
+          <div style="font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-bottom:.3rem">{{ $pos }}</div>
+          <div style="font-size:.8rem;font-weight:700;color:#0A0908">{{ $name }}</div>
+        </div>
+        @endforeach
+      </div>
+      <div style="width:1px;height:24px;background:#D8D6D4"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        @foreach([['Kabid Sosial','Muthia Syabrina'],['Kabid Kesenian','Calista Delinda'],['Kabid Humas','Sulthan Alqan Najed'],['Kabid Keamanan','Muhammad Furqan']] as [$pos,$name])
+        <div class="on" style="min-width:158px">
+          <div style="font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-bottom:.3rem">{{ $pos }}</div>
+          <div style="font-size:.8rem;font-weight:700;color:#0A0908">{{ $name }}</div>
+        </div>
+        @endforeach
+      </div>
+      <div style="width:1px;height:24px;background:#D8D6D4"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        @foreach([['Kabid Agama','M. Zakiyul Mubarak'],['Kabid Olahraga','Syamwil Mubarak'],['Kabid Kesehatan','Hafiz Al-Khalifi']] as [$pos,$name])
+        <div class="on" style="min-width:158px">
+          <div style="font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9C9A98;margin-bottom:.3rem">{{ $pos }}</div>
+          <div style="font-size:.8rem;font-weight:700;color:#0A0908">{{ $name }}</div>
+        </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ VOTING ══════ -->
+<section id="voting" style="padding:7rem 3rem;background:#FAFAF8" class="sp">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="rv" style="display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:3.5rem">
+      <div>
+        <div class="ey"><div class="ey-d"></div><span class="ey-l">04 — Pilih Pemimpinmu</span></div>
+        <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,4vw,3.75rem);line-height:1;letter-spacing:-.02em;color:#0A0908;margin:0 0 .875rem">Vote <em style="color:#C41230">Ketua &amp; Wakil OSIS</em></h2>
+        <p style="font-size:.85rem;color:#5C5A58;line-height:1.85;max-width:480px;margin:0">Satu siswa, satu suara. Berikan pilihan terbaikmu untuk Ketua &amp; Wakil OSIS periode 2026/2027.</p>
+      </div>
+      <div style="padding:.5rem 1rem;background:#fff;border:1.5px solid {{ $isOpen ? '#C41230' : '#E8E6E4' }};border-radius:7px;font-size:.62rem;font-weight:700;color:{{ $isOpen ? '#C41230' : '#9C9A98' }};letter-spacing:.08em;white-space:nowrap">
+        @if($isOpen) Voting Aktif
+        @elseif($closedRecently) Voting Ditutup &middot; Hasil Sementara
+        @else Voting Ditutup
+        @endif
+      </div>
+    </div>
+
+    @if($showVoting)
+      @php
+        $candidates = Pemilihan::orderBy('Jumlah_Suara','desc')->get();
+        $winner     = $candidates->first();
+        $totalVotes = $candidates->sum('Jumlah_Suara');
+        $isLoggedIn = Auth::check();
+      @endphp
+
+      @if($winner)
+      <div class="rv" style="background:#0A0908;border-radius:12px;padding:2.5rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap">
+        <div>
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#C41230;margin-bottom:.5rem">{{ $isOpen ? 'Pemenang Sementara' : 'Pemenang Akhir' }}</div>
+          <div style="font-family:'Instrument Serif',serif;font-size:1.85rem;font-style:italic;color:white;line-height:1.15;margin-bottom:.375rem">{{ $winner->Nama_Ketua }} &amp; {{ $winner->Nama_Wakil }}</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.35);font-weight:500">{{ $winner->Jumlah_Suara }} suara &nbsp;&middot;&nbsp; {{ $totalVotes > 0 ? round(($winner->Jumlah_Suara/$totalVotes)*100) : 0 }}%</div>
+        </div>
+        <div style="display:flex;gap:.625rem;flex-shrink:0">
+          <img src="{{ $winner->Foto_Ketua ? asset('storage/'.$winner->Foto_Ketua) : 'https://ui-avatars.com/api/?name='.urlencode($winner->Nama_Ketua).'&background=1a0508&color=c41230&size=80&bold=true' }}" alt="{{ $winner->Nama_Ketua }}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;border:1.5px solid rgba(196,18,48,.35)"/>
+          <img src="{{ $winner->Foto_Wakil ? asset('storage/'.$winner->Foto_Wakil) : 'https://ui-avatars.com/api/?name='.urlencode($winner->Nama_Wakil).'&background=1a0508&color=c41230&size=80&bold=true' }}" alt="{{ $winner->Nama_Wakil }}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;border:1.5px solid rgba(196,18,48,.35)"/>
+        </div>
+      </div>
+      @endif
+
+      @php
+        $gridClass = $candidates->count() <= 2
+          ? 'grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8 max-w-4xl mx-auto'
+          : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5';
+      @endphp
+      <div class="{{ $gridClass }} rv" id="cGrid"></div>
+
+      <div class="rv" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:2rem;padding:1.75rem 2.25rem;background:#F5F4F2;border-radius:10px;border:1px solid #E8E6E4">
+        <div>
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#9C9A98;margin-bottom:.25rem">Total Suara Masuk</div>
+          <div id="vTotal" style="font-family:'Instrument Serif',serif;font-size:2.75rem;color:#C41230;line-height:1">{{ $totalVotes }}</div>
+        </div>
+        <div style="font-size:.72rem;color:#9C9A98;line-height:1.75;text-align:right">
+          @if($isOpen) Data diperbarui secara real-time<br>setiap suara masuk
+          @else Voting telah ditutup<br>Hasil final akan diumumkan segera
+          @endif
+        </div>
+      </div>
+    @else
+      <div class="rv" style="background:#F5F4F2;border-radius:12px;padding:5rem;text-align:center;border:1px solid #E8E6E4">
+        <div style="width:52px;height:52px;background:#fff;border:1.5px solid #E8E6E4;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:#0A0908;margin-bottom:.75rem">Voting Belum Dibuka</h3>
+        <p style="font-size:.82rem;color:#5C5A58;line-height:1.8;max-width:380px;margin:0 auto">{{ SettingVoting::getMessage() }}</p>
+      </div>
+    @endif
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer style="background:#0A0908;padding:3.5rem 3rem;border-top:1px solid rgba(255,255,255,.05)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem">
+    <div>
+      <div style="font-family:'Instrument Serif',serif;font-size:1.25rem;color:white;margin-bottom:.375rem">OSIS <span style="color:#C41230">SMK Negeri 5 Telkom</span></div>
+      <div style="font-size:.6rem;font-weight:500;color:rgba(255,255,255,.18);letter-spacing:.04em">&copy; 2026 &nbsp;&middot;&nbsp; Dibuat dengan penuh semangat oleh Tim OSIS</div>
+    </div>
+    <div style="display:flex;gap:2rem">
+      @foreach(['Instagram','TikTok','Email','Kontak'] as $lnk)
+      <a href="#" style="font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#C41230'" onmouseout="this.style.color='rgba(255,255,255,.2)'">{{ $lnk }}</a>
+      @endforeach
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Intro */
+(function(){
+  const intro=document.getElementById('intro'),inner=document.getElementById('iin'),bar=document.getElementById('ibar');
+  requestAnimationFrame(()=>setTimeout(()=>{inner.classList.add('show');bar.classList.add('grow');},80));
+  setTimeout(()=>{
+    inner.style.transition='opacity .55s,filter .55s,transform .55s';
+    inner.style.opacity='0'; inner.style.filter='blur(10px)'; inner.style.transform='scale(1.04)';
+    setTimeout(()=>{ intro.classList.add('out'); setTimeout(()=>intro.remove(),920); },460);
+  },2800);
+})();
+
+/* Cursor */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let rx=0,ry=0,dx=0,dy=0;
+document.addEventListener('mousemove',e=>{dx=e.clientX;dy=e.clientY;cd.style.left=dx+'px';cd.style.top=dy+'px';});
+(function a(){rx+=(dx-rx)*.16;ry+=(dy-ry)*.16;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,.on,.pc,.cc').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cr.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cr.classList.remove('big'));
+});
+
+/* Nav scroll */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40),{passive:true});
+
+/* Ticker */
+const ti=['10+ Program Kerja Aktif','50+ Anggota Terlatih','Voting Ketua OSIS 2026','Daftar Sekarang','SMK Negeri 5 Telkom Banda Aceh','Inovatif · Inklusif · Berdampak'];
+const te=document.getElementById('tk');
+te.innerHTML=ti.map(t=>`<span style="display:inline-flex;align-items:center;gap:.625rem;padding:0 2.25rem;font-size:.62rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);white-space:nowrap">${t}<span style="color:rgba(255,255,255,.15);font-size:.4rem">&#9724;</span></span>`).join('')+''+ti.map(t=>`<span style="display:inline-flex;align-items:center;gap:.625rem;padding:0 2.25rem;font-size:.62rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);white-space:nowrap">${t}<span style="color:rgba(255,255,255,.15);font-size:.4rem">&#9724;</span></span>`).join('');
+
+/* Reveal */
+const ro=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+/* Voting */
+@if($showVoting)
+@php
+$candsData=$candidates->map(function($c,$i){return['id'=>$c->id,'name'=>$c->Nama_Ketua.' & '.$c->Nama_Wakil,'num'=>str_pad($i+1,2,'0',STR_PAD_LEFT),'tagline'=>$c->Visi.' — '.$c->Misi,'foto_ketua'=>$c->Foto_Ketua?asset('storage/'.$c->Foto_Ketua):'https://ui-avatars.com/api/?name='.urlencode($c->Nama_Ketua).'&background=f5f4f2&color=c41230&size=80&bold=true','foto_wakil'=>$c->Foto_Wakil?asset('storage/'.$c->Foto_Wakil):'https://ui-avatars.com/api/?name='.urlencode($c->Nama_Wakil).'&background=f5f4f2&color=c41230&size=80&bold=true','votes'=>$c->Jumlah_Suara];})->toArray();
+@endphp
+const cands=@json($candsData),isOpen={{ $isOpen?'true':'false' }},isLoggedIn={{ $isLoggedIn?'true':'false' }},voteUrl=isLoggedIn?'{{ route("vote") }}':'{{ route("login") }}';
+function renderVote(){
+  const g=document.getElementById('cGrid');if(!g)return;g.innerHTML='';
+  const tot=cands.reduce((a,c)=>a+c.votes,0);
+  cands.forEach((c,i)=>{
+    const pct=tot>0?Math.round(c.votes/tot*100):0,top=i===0&&c.votes>0;
+    const btn=isOpen?`<a href="${voteUrl}" style="display:block;width:100%;padding:.7rem;background:#C41230;color:white;text-decoration:none;border-radius:7px;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;transition:background .2s" onmouseover="this.style.background='#A00E27'" onmouseout="this.style.background='#C41230'">${isLoggedIn?'Vote Sekarang':'Mulai Voting'}</a>`:`<div style="width:100%;padding:.7rem;background:#F5F4F2;color:#9C9A98;border:1.5px solid #E8E6E4;border-radius:7px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center">Voting Ditutup</div>`;
+    const badge=top?`<div style="position:absolute;top:.875rem;right:.875rem;padding:.2rem .625rem;background:#C41230;border-radius:100px;font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:white">Terdepan</div>`:'';
+    const el=document.createElement('div');el.className='cc';
+    el.innerHTML=`<div style="background:#F5F4F2;padding:2.25rem 1.75rem 1.75rem;text-align:center;position:relative">${badge}<div style="position:absolute;top:.875rem;left:.875rem;width:26px;height:26px;background:#0A0908;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:white;font-family:'Syne',sans-serif">${c.num}</div><div style="display:flex;justify-content:center;gap:.625rem;margin-bottom:1.125rem"><img src="${c.foto_ketua}" alt="Ketua" style="width:58px;height:58px;border-radius:8px;object-fit:cover;border:1.5px solid rgba(196,18,48,.12);background:white"/><img src="${c.foto_wakil}" alt="Wakil" style="width:58px;height:58px;border-radius:8px;object-fit:cover;border:1.5px solid rgba(196,18,48,.12);background:white"/></div><div style="font-family:'Instrument Serif',serif;font-size:1.05rem;color:#0A0908;margin-bottom:.3rem">${c.name}</div><p style="font-size:.65rem;color:#9C9A98;line-height:1.6;max-height:2.5rem;overflow:hidden;margin:0">${c.tagline}</p></div><div style="padding:1.25rem 1.75rem"><div style="height:2px;background:#E8E6E4;border-radius:4px;margin-bottom:.5rem;overflow:hidden"><div class="vbar" style="height:100%;border-radius:4px;background:#C41230;width:${pct}%"></div></div><div style="display:flex;justify-content:space-between;font-size:.6rem;color:#9C9A98;margin-bottom:1.125rem;font-weight:600"><span>${c.votes} suara</span><span>${pct}%</span></div>${btn}</div>`;
+    g.appendChild(el);
+  });
+  const tv=document.getElementById('vTotal');if(tv)tv.textContent=tot.toLocaleString('id-ID');
+}
+renderVote();
+@endif
+
+/* Legacy helpers */
+function toggleForm(t){const f=document.getElementById('form'+t),b=document.getElementById('btn'+t);if(!f||!b)return;const o=f.classList.toggle('open');b.classList.toggle('open',o);b.textContent=o?'Tutup Formulir':'Buka Formulir Pendaftaran';b.style.background=o?'#C41230':'';b.style.color=o?'#fff':'';b.style.borderColor=o?'#C41230':'';}
+function submitReg(t){const d=document.getElementById('done'+t);if(d){d.classList.remove('hidden');d.classList.add('block');}const f=document.getElementById('form'+t);if(f)f.querySelectorAll('input,select,textarea').forEach(el=>el.value='');}
+</script>
+</body>
+</html>

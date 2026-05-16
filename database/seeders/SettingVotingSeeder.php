@@ -16,7 +16,7 @@ class SettingVotingSeeder extends Seeder
             'is_open' => false,
             'start_date' => null,
             'end_date' => null,
-            'message' => 'Voting belum dibuka. Silakan tunggu pengumuman dari OSIS.',
+            'message' => null,
         ]);
     }
 }
